@@ -21,56 +21,81 @@ from bark import SAMPLE_RATE
 nltk.data.path.append('C:/Users/ankit/AppData/Roaming/nltk_data/tokenizers/punkt')
 nltk.download('punkt')
 
+def image_generator(prompt):
+    """
+    Function to generate an image using the prompt.
+    """
+    from diffusers import StableDiffusionPipeline
+    
+    print("Generating image for the prompt...")
+    pipeline = StableDiffusionPipeline.from_pretrained("runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16)
+    pipeline.to("cuda")  # Move to GPU for faster processing
+    
+    # Generate the image
+    image = pipeline(prompt, num_inference_steps=50).images[0]
+    return image
 
-def load_video_diffusion_model():
-    print("Loading Stable Video Diffusion model...")
+def export_to_video(frames, file_name, fps=15):
+    """
+    Export frames to a video file using OpenCV.
+    
+    Args:
+        frames (list): List of PIL Image frames.
+        file_name (str): The name of the output video file.
+        fps (int): Frames per second for the video.
+    """
+    # Convert the frames from PIL to numpy arrays
+    frame_arrays = [cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR) for frame in frames]
+
+    # Get the dimensions of the frames
+    height, width, _ = frame_arrays[0].shape
+
+    # Create a VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Codec for .mp4 files
+    out = cv2.VideoWriter(file_name, fourcc, fps, (width, height))
+
+    # Write frames to the video file
+    for frame in frame_arrays:
+        out.write(frame)
+
+    # Release the video writer
+    out.release()
+    print(f"Video saved as {file_name}")
+
+def video_generator(prompt, video_len, file_name):
+    """
+    Generate a video for the given prompt and duration.
+    """
+    print(f"Video prompt: {prompt}")
+
+    # Load and configure the pipeline
     pipeline = StableVideoDiffusionPipeline.from_pretrained(
-        "stabilityai/stable-video-diffusion-img2vid-xt-1-1",
+        "stabilityai/stable-video-diffusion-img2vid-xt",  # Public model (assuming no special access required)
         torch_dtype=torch.float16,
         variant="fp16"
     )
-    pipeline.to("cuda")  # Use GPU for faster inference
-    return pipeline
+    pipeline.enable_model_cpu_offload()  # Offload model layers to CPU to save GPU memory
+    pipeline.to("cuda")  # Move pipeline to GPU for faster inference
 
-def generate_video_frame(pipeline, prompt, video_len, fps=15):
-    print(f"Generating video for prompt: {prompt}")
-    
-    # Define parameters for video generation
-    generator = torch.manual_seed(42)
-    num_frames = fps * video_len
+    # Generate and resize the image
+    image = image_generator(prompt)  # Use the image generator function
+    image = image.resize((512, 288))  # Resize for optimization and faster processing
 
-    # Generate the video frames
+    # Define parameters
+    fps = 15  # Frames per second (you can adjust based on your need)
+    duration = video_len  # Video duration in seconds
+    num_frames = fps * duration  # Total number of frames
+
+    print(f"Generating all {num_frames} frames at once...")
     frames = pipeline(
-        prompt=prompt,
-        num_inference_steps=15,
-        num_frames=num_frames,
-        generator=generator
+        image=image,
+        decode_chunk_size=num_frames,  # Generate all frames in one go
+        generator=torch.manual_seed(42),
     ).frames[0]
-    
-    return frames
 
-def save_video(frames, output_path, fps=15):
-    height, width, _ = np.array(frames[0]).shape
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
-
-    for frame in frames:
-        out.write(cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR))
-
-    out.release()
-    print(f"Video saved to {output_path}")
-
-#Video Generator
-def video_generator(prompt, video_len, file_name):
-    # Load the video generation model
-    video_diff_pipe = load_video_diffusion_model()
-
-    # Generate the video frames
-    frames = generate_video_frame(video_diff_pipe, prompt, video_len)
-
-    # Save the generated video
-    save_video(frames, file_name + ".mp4")
-
+    # Export the generated frames to a video file
+    export_to_video(frames, file_name + ".mp4", fps=fps)
+    print(f"Video generated and saved as {file_name}.mp4")
 
 # #Image Genertor
 # def image_generator(prompt):
