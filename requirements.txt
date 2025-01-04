@@ -12,3 +12,6 @@ opencv-python
 imageio 
 imageio[ffmpeg]
 moviepy==1.0.3
+requests
+PyYAML
+
