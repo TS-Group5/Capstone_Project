@@ -84,7 +84,7 @@ def audio_generator(script, file_name):
     
     # Ensure GPU is visible to the environment
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-    
+    torch.device("cuda")
     # Preload models for Bark
     preload_models()
     
@@ -129,6 +129,7 @@ def audio_generator(script, file_name):
 
 #Merging the Audio Video outcomes
 def audio_video_merger(audio_input, video_input, output, text_to_add, font_size=16, font_color='white', rect_color='red', rect_opacity=0.5):
+   
     print(f"audio_video_merger text_to_add = {text_to_add}, audio_input ={audio_input}, video_input= {video_input},output ={output}")
     """
     Merges audio and video, adds text overlay with a rectangle background at the bottom, and saves the final output.
