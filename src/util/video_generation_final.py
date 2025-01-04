@@ -128,69 +128,49 @@ def audio_generator(script, file_name):
     print(f"Audio file saved as {file_name}.wav")
 
 #Merging the Audio Video outcomes
-def audio_video_merger(audio_input, video_input, output, text_to_add, font_size=16, font_color='white', rect_color='red', rect_opacity=0.5):
-    print(f"audio_video_merger text_to_add = {text_to_add}, audio_input ={audio_input}, video_input= {video_input},output ={output}")
-    """
-    Merges audio and video, adds text overlay with a rectangle background at the bottom, and saves the final output.
 
-    Parameters:
-    - audio_input: Path to the audio file.
-    - video_input: Path to the video file.
-    - output: Output file name (without extension).
-    - text_to_add: Text to overlay on the video.
-    - font_size: Size of the font for the text.
-    - font_color: Color of the text ('white' by default).
-    - rect_color: Background color of the rectangle ('red' by default).
-    - rect_opacity: Opacity of the rectangle (0.5 by default).
-    """
-    # Paths to your video and audio files
-    video_path = video_input
-    audio_path = audio_input
-    output_path = output + ".mp4"
-
+def audio_video_merger(audio_file, video_file, output_file, caption):
+    print(f"caption = ====={caption}")
     try:
-        # Load the video and audio
-        video1 = VideoFileClip(video_path)
-        audio = AudioFileClip(audio_path)
-
-        # Set the audio to the video
-        video = video1.set_audio(audio)
+        # Load audio and video
+        audio_clip = AudioFileClip(audio_file)
+        video_clip = VideoFileClip(video_file)
         
-        # Loop the video to match the duration of the audio
-        video = video.fx(vfx.loop, duration=audio.duration)
+        # Get the duration of the audio and video
+        audio_duration = audio_clip.duration
+        video_duration = video_clip.duration
 
-        # Create the text clip
-        text_clip = TextClip(
-            text_to_add,
-            fontsize=font_size,
-            color=font_color,
-            font="Arial"
-        ).set_position(('center', 'bottom')).set_duration(video.duration)
+        # If video is shorter than audio, loop the video to match the audio duration
+        if video_duration < audio_duration:
+            num_loops = int(audio_duration // video_duration) + 1  # Repeat enough times
+            video_clip = concatenate_videoclips([video_clip] * num_loops)
+            video_clip = video_clip.subclip(0, audio_duration)  # Trim to match audio duration
 
-        # Create the rectangle background
-        rect_width = video.size[0]  # Width of the video
-        rect_height = font_size + 20  # Height of the rectangle (adjust as needed)
-        rectangle = ColorClip(
-            size=(rect_width, rect_height),
-            color=(255, 0, 0)  # Red color
-        ).set_opacity(rect_opacity).set_position(('center', 'bottom')).set_duration(video.duration)
+        # If video is longer than audio, trim the video to match the audio duration
+        elif video_duration > audio_duration:
+            video_clip = video_clip.subclip(0, audio_duration)
 
-        # Combine the text and rectangle
-        video_with_text = CompositeVideoClip([video, rectangle, text_clip])
+        # Set the audio for the video clip
+        video_clip = video_clip.set_audio(audio_clip)
 
-        # Export the final video
-        video_with_text.write_videofile(output_path, codec="libx264", audio=True, verbose=True, fps=16)
-        print("Video with audio and text inside a rectangle saved as:", output_path)
+        # Add text caption on the left side of the video
+        if caption:
+            text_clip = TextClip(caption, fontsize=24, color='white', font='Arial', bg_color='black', size=(320, None))
+            text_clip = text_clip.set_position(('left', 'center')).set_duration(audio_duration)
 
-    finally:
-        # Release resources
-        video1.close()
-        audio.close()
-        if 'video' in locals():
-            video.close()
-        if 'video_with_text' in locals():
-            video_with_text.close()
-        print("Resources released.")
+            # Combine the video with the text
+            video_clip = CompositeVideoClip([video_clip, text_clip])
+
+        # Write the final video to output file
+        video_clip.write_videofile(f"{output_file}.mp4", codec="libx264", audio_codec="aac")
+
+        # Close all clips
+        video_clip.close()
+        audio_clip.close()
+
+    except Exception as e:
+        print(f"An error occurred while merging {audio_file} and {video_file}: {e}")
+
 
 def parse_text_to_json(structured_text) :
     pattern = re.compile(
