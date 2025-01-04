@@ -11,4 +11,4 @@ accelerate
 opencv-python
 imageio 
 imageio[ffmpeg]
-moviepy=1.0.3
+moviepy==1.0.3
