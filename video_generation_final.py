@@ -17,6 +17,7 @@ from bark.api import semantic_to_waveform
 from bark import SAMPLE_RATE
 
 # Download the necessary NLTK data
+nltk.data.path.append('C:/Users/ankit\AppData/Roaming/nltk_data/tokenizers/punkt')
 nltk.download('punkt')
 
 #Video Generator
