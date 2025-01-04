@@ -23,46 +23,50 @@ nltk.download('punkt')
 
 #Video Generator
 def video_generator(prompt, video_len, file_name):
-    # Load the pipeline for video generation
-    print(f"video prompt = {prompt}")
+    """
+    Generate a video for the given prompt and duration without using a loop.
+    """
+
+
+    print(f"Video prompt: {prompt}")
+
+    # Load and configure the pipeline
     pipeline = StableVideoDiffusionPipeline.from_pretrained(
-        "stabilityai/stable-video-diffusion-img2vid-xt", torch_dtype=torch.float16, variant="fp16"
+        "stabilityai/stable-video-diffusion-img2vid-xt",
+        torch_dtype=torch.float16,
+        variant="fp16"
     )
     pipeline.enable_model_cpu_offload()
-    pipeline.to("cuda")  # Enable GPU acceleration
+    pipeline.to("cuda")  # Move the pipeline to GPU
 
     # Load and resize the input image
-    image = image_generator(prompt)
-    image = image.resize((512, 288))  # Reduced resolution for faster processing
+    image = image_generator(prompt)  # Replace with your image generator function
+    #image = image.resize((384, 216))  # Reduced resolution for faster processing
 
     # Define parameters
     generator = torch.manual_seed(42)
-    fps = 15  # Lower FPS for optimization
-    duration = video_len  # 10 seconds of video
+    fps = 15
+    duration = video_len
     num_frames = fps * duration
-    decode_chunk_size = 64  # Frames generated per chunk
 
-    # Generate frames sequentially
-    frames = []
-    for i in range(0, num_frames, decode_chunk_size):
-        print(f"Generating frames {i} to {i + decode_chunk_size}")
-        chunk_frames = pipeline(
-            image=image,
-            decode_chunk_size=min(decode_chunk_size, num_frames - i),
-            generator=generator,
-        ).frames[0]
-        frames.extend(chunk_frames)
+    print(f"Generating all {num_frames} frames at once...")
+    # Generate all frames at once
+    frames = pipeline(
+        image=image,
+        decode_chunk_size=num_frames,  # Generate all frames in one call
+        generator=generator,
+    ).frames[0]
 
     # Save the video
-    export_to_video(frames, file_name+".mp4", fps=fps)
-    print("Video generated and saved as 'optimized_sequential_video.mp4'")
+    export_to_video(frames, file_name + ".mp4", fps=fps)
+    print(f"Video generated and saved as {file_name}.mp4")
+
 
 #Image Genertor
 def image_generator(prompt):
     from diffusers import StableDiffusionPipeline
-    #for video
-    from diffusers import StableVideoDiffusionPipeline
-    from diffusers.utils import load_image, export_to_video
+    from PIL import Image
+
     # Load the Stable Diffusion pipeline
     print("Loading Stable Diffusion pipeline...")
     pipeline = StableDiffusionPipeline.from_pretrained(
@@ -70,11 +74,16 @@ def image_generator(prompt):
     )
     pipeline.to("cuda")  # Use GPU for faster inference
 
-    # Generate the image                                                                                                                                                                           
+    # Generate the image
     print("Generating image...")
-    image = pipeline(prompt, num_inference_steps=50).images[0]
+    image = pipeline(prompt, num_inference_steps=25).images[0]  # Reduced inference steps for faster generation
 
-    # return the generated image
+    # Resize the image for video compatibility
+    target_size = (384, 216)  # Standard size for video input
+    print(f"Resizing image to {target_size}...")
+    image = image.resize(target_size, Image.LANCZOS)
+
+    # Return the resized image
     return image
 
 #Audio Generator
