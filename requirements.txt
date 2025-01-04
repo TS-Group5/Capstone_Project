@@ -1,0 +1,14 @@
+streamlit
+mysql-connector-python
+sqlite-connector
+pyrebase4
+google-cloud-texttospeech
+bark
+torchaudio
+nltk
+diffusers
+accelerate
+opencv-python
+imageio 
+imageio[ffmpeg]
+moviepy==1.0.3
