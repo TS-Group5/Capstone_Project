@@ -129,8 +129,7 @@ def audio_generator(script, file_name):
 
 #Merging the Audio Video outcomes
 
-def audio_video_merger(audio_file, video_file, output_file, caption):
-    print(f"caption = ====={caption}")
+def audio_video_merger(audio_file, video_file, output_file, caption=None):
     try:
         # Load audio and video
         audio_clip = AudioFileClip(audio_file)
@@ -151,18 +150,15 @@ def audio_video_merger(audio_file, video_file, output_file, caption):
             video_clip = video_clip.subclip(0, audio_duration)
 
         # Set the audio for the video clip
+        print(f"audio_clip  ====={audio_file}")
         video_clip = video_clip.set_audio(audio_clip)
 
-        # Add text caption on the left side of the video
+        # Optional: Add caption to the video (if required)
         if caption:
-            text_clip = TextClip(caption, fontsize=24, color='white', font='Arial', bg_color='black', size=(320, None))
-            text_clip = text_clip.set_position(('left', 'center')).set_duration(audio_duration)
-
-            # Combine the video with the text
-            video_clip = CompositeVideoClip([video_clip, text_clip])
+            video_clip = video_clip.set_duration(audio_duration)  # Ensure caption matches audio duration
 
         # Write the final video to output file
-        video_clip.write_videofile(f"src/merged_video/{output_file}.mp4", codec="libx264", audio_codec="aac")
+        video_clip.write_videofile(f"{output_file}.mp4", codec="libx264", audio_codec="aac")
 
         # Close all clips
         video_clip.close()
@@ -170,7 +166,6 @@ def audio_video_merger(audio_file, video_file, output_file, caption):
 
     except Exception as e:
         print(f"An error occurred while merging {audio_file} and {video_file}: {e}")
-
 
 def parse_text_to_json(structured_text) :
     pattern = re.compile(

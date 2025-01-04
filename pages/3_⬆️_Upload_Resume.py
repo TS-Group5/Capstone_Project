@@ -172,33 +172,33 @@ if st.button("Generate Video"):
                    
                 with st.spinner("Generating Audio... Please wait!"):
                         try:
-                            audio_path = audio_generator(scenes[section]['Audio'], section)
+                            #audio_path = audio_generator(scenes[section]['Audio'], section)
                             st.success("Audio generated successfully!")
                         except Exception as e:
                             st.error(f"An error occurred: while generating audio {e}")  
                     
                 with st.spinner("Generating video... Please wait!"):
                         try:
-                            video_path = video_generator(scenes[section]['Visual'], duration, section)
+                           # video_path = video_generator(scenes[section]['Visual'], duration, section)
                             st.success("Video generated successfully!")
                         except Exception as e:
                             st.error(f"An error occurred: while generating video {e}")  
         with st.spinner("Merging video in progress ... Please wait!"):
                 try :
-                        os.enviroaudio_video_mergern['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
-                        ("Introduction.wav","Introduction.mp4", "Introduction", video_caption.get('Introduction'))
-                        audio_video_merger("Experience.wav","Experience.mp4", "Experience",  video_caption.get('Experience'))
-                        audio_video_merger("Skills.wav","Skills.mp4", "Skills",  video_caption.get('Skills'))
-                        audio_video_merger("Achievement.wav","Achievement.mp4","Achievement",  video_caption.get('Achievement'))
-                        audio_video_merger("Goals.wav","Goals.mp4","Goals",  video_caption.get('Goals'))
-                        audio_video_merger("Contact.wav","Contact.mp4","Contact",  video_caption.get('Contact'))
+                        os.environ['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
+                        audio_video_merger(r"src/audio/Introduction.wav",r"src/video/Introduction.mp4", r"src/merged_video/Introduction", video_caption.get('Introduction'))
+                        audio_video_merger(r"src/audio/Experience.wav",r"src/video/Experience.mp4",  r"src/merged_video/Experience",  video_caption.get('Experience'))
+                        audio_video_merger(r"src/audio/Skills.wav",r"src/video/Skills.mp4",  r"src/merged_video/Skills",  video_caption.get('Skills'))
+                        audio_video_merger(r"src/audio/Achievement.wav",r"src/video/Achievement.mp4", r"src/merged_video/Achievement",  video_caption.get('Achievement'))
+                        audio_video_merger(r"src/audio/Goals.wav",r"src/video/Goals.mp4", r"src/merged_video/Goals",  video_caption.get('Goals'))
+                        audio_video_merger(r"src/audio/Contact.wav",r"src/video/Contact.mp4", r"src/merged_video/Contact",  video_caption.get('Contact'))
                         video_paths = [
-                            "src/merged_video/Introduction.mp4",
-                            "src/merged_video/Experience.mp4",
-                            "src/merged_video/Skills.mp4",
-                            "src/merged_video/Achievement.mp4",
-                            "src/merged_video/Goals.mp4",
-                            "src/merged_video/Contact.mp4"
+                            r"src/merged_video/Introduction.mp4",
+                            r"src/merged_video/Experience.mp4",
+                            r"src/merged_video/Skills.mp4",
+                            r"src/merged_video/Achievement.mp4",
+                            r"src/merged_video/Goals.mp4",
+                            r"src/merged_video/Contact.mp4"
                         ]
 
                     # Load video clips
