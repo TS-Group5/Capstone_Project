@@ -1,0 +1,4 @@
+api:
+  base_url: "http://0.0.0.0:8000"
+  endpoints:
+    generate_script: "/generate-script"

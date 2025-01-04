@@ -1,15 +1,15 @@
+import os
 import torch
 import re
 import moviepy.editor as mp
 from diffusers import StableVideoDiffusionPipeline
-from diffusers.utils import load_image, export_to_video
+from diffusers.utils import export_to_video
 
 #merger import
 from moviepy.editor import VideoFileClip, AudioFileClip
 from moviepy.editor import *
 
 #Audio generation
-import os
 from scipy.io.wavfile import write as write_wav
 import numpy as np
 import nltk  # we'll use this to split into sentences
@@ -18,7 +18,7 @@ from bark.api import semantic_to_waveform
 from bark import SAMPLE_RATE
 
 # Download the necessary NLTK data
-nltk.data.path.append('C:/Users/ankit\AppData/Roaming/nltk_data/tokenizers/punkt')
+nltk.data.path.append('/Users/anilkumar/nltk_data/tokenizers/punkt')
 nltk.download('punkt')
 
 #Video Generator

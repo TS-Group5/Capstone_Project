@@ -40,6 +40,6 @@ with col1:
 # Display button and handle click
 if st.button("Create Your Video Resume"):
     if  st.session_state.authenticated :
-        st.switch_page("pages\\3_⬆️_Upload_Resume.py")
+        st.switch_page("pages/3_⬆️_Upload_Resume.py")
     else :
-        st.switch_page("pages\\2_🔒_Login.py")
+        st.switch_page("pages/2_🔒_Login.py")
