@@ -185,7 +185,7 @@ def audio_video_merger(audio_input, video_input, output, text_to_add, font_size=
 
     finally:
         # Release resources
-        video1.close()
+        video.close()
         audio.close()
         if 'video' in locals():
             video.close()
