@@ -8,7 +8,7 @@ st.set_page_config(layout='wide')
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 if  st.session_state.authenticated :
-    st.switch_page("pages\\3_⬆️_Upload_Resume.py")
+    st.switch_page("pages/3_⬆️_Upload_Resume.py")
 # Load Background Image
 def add_bg_from_local(image_path):
     with open(image_path, "rb") as image_file:
@@ -56,7 +56,7 @@ if not  st.session_state.authenticated :
                 st.session_state.user_info = user_info
 
                 time.sleep(2)
-                st.switch_page("pages\\3_⬆️_Upload_Resume.py")
+                st.switch_page("pages/3_⬆️_Upload_Resume.py")
             else:
                 st.error("Invalid username or password.")
                 st.session_state.authenticated = False
