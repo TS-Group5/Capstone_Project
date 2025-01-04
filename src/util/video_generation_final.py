@@ -7,7 +7,7 @@ from diffusers.utils import load_image, export_to_video
 #merger import
 from moviepy.editor import VideoFileClip, AudioFileClip
 from moviepy.editor import *
-
+import cv2
 #Audio generation
 import os
 from scipy.io.wavfile import write as write_wav
@@ -18,73 +18,83 @@ from bark.api import semantic_to_waveform
 from bark import SAMPLE_RATE
 
 # Download the necessary NLTK data
-nltk.data.path.append('C:/Users/ankit\AppData/Roaming/nltk_data/tokenizers/punkt')
+nltk.data.path.append('C:/Users/ankit/AppData/Roaming/nltk_data/tokenizers/punkt')
 nltk.download('punkt')
 
-#Video Generator
-def video_generator(prompt, video_len, file_name):
-    """
-    Generate a video for the given prompt and duration without using a loop.
-    """
 
-
-    print(f"Video prompt: {prompt}")
-
-    # Load and configure the pipeline
+def load_video_diffusion_model():
+    print("Loading Stable Video Diffusion model...")
     pipeline = StableVideoDiffusionPipeline.from_pretrained(
-        "stabilityai/stable-video-diffusion-img2vid-xt",
+        "stabilityai/stable-video-diffusion-img2vid-xt-1-1",
         torch_dtype=torch.float16,
         variant="fp16"
     )
-    pipeline.enable_model_cpu_offload()
-    pipeline.to("cuda")  # Move the pipeline to GPU
-
-    # Load and resize the input image
-    image = image_generator(prompt)  # Replace with your image generator function
-    #image = image.resize((384, 216))  # Reduced resolution for faster processing
-
-    # Define parameters
-    generator = torch.manual_seed(42)
-    fps = 15
-    duration = video_len
-    num_frames = fps * duration
-
-    print(f"Generating all {num_frames} frames at once...")
-    # Generate all frames at once
-    frames = pipeline(
-        image=image,
-        decode_chunk_size=num_frames,  # Generate all frames in one call
-        generator=generator,
-    ).frames[0]
-
-    # Save the video
-    export_to_video(frames, file_name + ".mp4", fps=fps)
-    print(f"Video generated and saved as {file_name}.mp4")
-
-
-#Image Genertor
-def image_generator(prompt):
-    from diffusers import StableDiffusionPipeline
-    from PIL import Image
-
-    # Load the Stable Diffusion pipeline
-    print("Loading Stable Diffusion pipeline...")
-    pipeline = StableDiffusionPipeline.from_pretrained(
-        "runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16
-    )
     pipeline.to("cuda")  # Use GPU for faster inference
+    return pipeline
 
-    # Generate the image
-    print("Generating image...")
-    image = pipeline(prompt, num_inference_steps=25).images[0]  # Reduced inference steps for faster generation
+def generate_video_frame(pipeline, prompt, video_len, fps=15):
+    print(f"Generating video for prompt: {prompt}")
+    
+    # Define parameters for video generation
+    generator = torch.manual_seed(42)
+    num_frames = fps * video_len
 
-    # Resize the image for video compatibility
-    target_size = (384, 216)  # Standard size for video input
-    print(f"Resizing image to {target_size}...")
-    image = image.resize(target_size, Image.LANCZOS)
+    # Generate the video frames
+    frames = pipeline(
+        prompt=prompt,
+        num_inference_steps=15,
+        num_frames=num_frames,
+        generator=generator
+    ).frames[0]
+    
+    return frames
 
-    # Return the resized image
-    return image
+def save_video(frames, output_path, fps=15):
+    height, width, _ = np.array(frames[0]).shape
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+
+    for frame in frames:
+        out.write(cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR))
+
+    out.release()
+    print(f"Video saved to {output_path}")
+
+#Video Generator
+def video_generator(prompt, video_len, file_name):
+    # Load the video generation model
+    video_diff_pipe = load_video_diffusion_model()
+
+    # Generate the video frames
+    frames = generate_video_frame(video_diff_pipe, prompt, video_len)
+
+    # Save the generated video
+    save_video(frames, file_name + ".mp4")
+
+
+# #Image Genertor
+# def image_generator(prompt):
+#     from diffusers import StableDiffusionPipeline
+#     from PIL import Image
+
+#     # Load the Stable Diffusion pipeline
+#     print("Loading Stable Diffusion pipeline...")
+#     pipeline = StableDiffusionPipeline.from_pretrained(
+#         "runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16
+#     )
+#     pipeline.to("cuda")  # Use GPU for faster inference
+
+#     # Generate the image
+#     print("Generating image...")
+#     image = pipeline(prompt, num_inference_steps=25).images[0]  # Reduced inference steps for faster generation
+
+#     # Resize the image for video compatibility
+#     target_size = (384, 216)  # Standard size for video input
+#     print(f"Resizing image to {target_size}...")
+#     image = image.resize(target_size, Image.LANCZOS)
+
+#     # Return the resized image
+#     return image
 
 #Audio Generator
 # Function to use GPU for audio generation
