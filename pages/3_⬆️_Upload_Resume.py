@@ -1,7 +1,9 @@
 import streamlit as st
 import base64
-from video_generation_final import video_generator, audio_generator, audio_video_merger
+from src.util.video_generation_final import video_generator, audio_generator, audio_video_merger, parse_text_to_json
+from src.util.format_summary import generate_formated_output_gemini
 from PIL import Image
+from moviepy.editor import VideoFileClip, concatenate_videoclips
 st.markdown(
     """
     <style>
@@ -69,24 +71,67 @@ with c2 :
 duration = st.slider("Duration (in seconds):", 1, 20, 10)
 fps = st.slider("Frames per second (FPS):", 8, 30, 16)
 if st.button("Generate Video"):
-        with st.spinner("Generating Audio... Please wait!"):
-            try:
-                #audio_path = audio_generator(summary)
-                st.success("Audio generated successfully!")
-            except Exception as e:
-                st.error(f"An error occurred: {e}")  
-                
-        with st.spinner("Generating video... Please wait!"):
-            try:
-                #video_path = video_generator(summary, duration)
-                st.success("Video generated successfully!")
-                with st.spinner("Merging video in progress ... Please wait!"):
-                    audio_video_merger("bark_generation5.wav","optimized_sequential_video.mp4")
-                    st.success("Merging completed successfully !!")
-                    st.video("output_video.mp4")
-                    # video_file = open("output_video.mp4", "rb")
-                    # video_bytes = video_file.read()
-                    # st.video(video_bytes)
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+        video_caption = {}
+        scenes= generate_formated_output_gemini(summary,)
+        required_sections = ['Introduction', 'Experience', 'Skills', 'Achievement', 'Goals', 'Contact']
+        for section in required_sections:
+            if section in scenes:
+                print(f"--- {scenes[section]['Caption']} ---")
+                 
+                video_caption[section] = scenes[section]['Caption']
+                   
+                with st.spinner("Generating Audio... Please wait!"):
+                        try:
+                            audio_path = audio_generator(scenes[section]['Audio'], section)
+                            st.success("Audio generated successfully!")
+                        except Exception as e:
+                            st.error(f"An error occurred: while generating audio {e}")  
+                    
+                with st.spinner("Generating video... Please wait!"):
+                        try:
+                            video_path = video_generator(scenes[section]['Visual'], duration, section)
+                            st.success("Video generated successfully!")
+                        except Exception as e:
+                            st.error(f"An error occurred: while generating video {e}")  
+            
+       
+        
+        with st.spinner("Merging video in progress ... Please wait!"):
+                try :
+                        audio_video_merger("Introduction.wav","Introduction.mp4", "Introduction", video_caption.get('Introduction'))
+                        audio_video_merger("Experience.wav","Experience.mp4", "Experience",  video_caption.get('Experience'))
+                        audio_video_merger("Skills.wav","Skills.mp4", "Skills",  video_caption.get('Skills'))
+                        audio_video_merger("Achievement.wav","Achievement.mp4","Achievement",  video_caption.get('Achievement'))
+                        audio_video_merger("Goals.wav","Goals.mp4","Goals",  video_caption.get('Goals'))
+                        audio_video_merger("Contact.wav","Contact.mp4","Contact",  video_caption.get('Contact'))
+                        video_paths = [
+                            "video1.mp4",
+                            "video2.mp4",
+                            "video3.mp4",
+                            "video4.mp4",
+                            "video5.mp4"
+                        ]
+
+                    # Load video clips
+                        video_clips = [VideoFileClip(video) for video in video_paths]
+
+# Concatenate video clips
+                        final_clip = concatenate_videoclips(video_clips, method="compose")
+
+                    # Save the merged video
+                        output_path = "merged_video.mp4"
+                        final_clip.write_videofile(output_path, codec="libx264", audio_codec="aac")
+
+                        # Close all clips
+                        for clip in video_clips:
+                            clip.close()
+                            final_clip.close()
+
+
+                        st.success("Merging completed successfully !!")
+                        st.video("output_video.mp4")
+                except Exception as e:
+                            st.error(f"An error occurred: {e}")
+                             
+    
                 

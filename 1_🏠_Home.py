@@ -31,8 +31,12 @@ with col1:
     """,
     unsafe_allow_html=True,
 )
-    st.markdown("With our application, effortlessly create stunning video resumes that showcase your achievements and qualifications in an engaging way. Simply upload your resume, and let the AI handle the rest.")
-
+    st.markdown("""
+    <p style="color: white; font-size: 16px;">
+        With our application, effortlessly create stunning video resumes that showcase your achievements and qualifications in an engaging way. 
+        Simply upload your resume, and let the AI handle the rest.
+    </p>
+    """, unsafe_allow_html=True)
 # Display button and handle click
 if st.button("Create Your Video Resume"):
     if  st.session_state.authenticated :

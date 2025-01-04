@@ -3,6 +3,7 @@ from PIL import Image
 import base64
 import time
 from src.db.db_connector import check_login
+
 st.set_page_config(layout='wide')
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
@@ -20,6 +21,10 @@ def add_bg_from_local(image_path):
             background-size: cover;
             background-position: center;
         }}
+
+          label {{
+        color: white !important;
+    }}
         </style>
         """,
         unsafe_allow_html=True
