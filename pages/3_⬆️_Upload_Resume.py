@@ -105,11 +105,11 @@ if st.button("Generate Video"):
                         audio_video_merger("Goals.wav","Goals.mp4","Goals",  video_caption.get('Goals'))
                         audio_video_merger("Contact.wav","Contact.mp4","Contact",  video_caption.get('Contact'))
                         video_paths = [
-                            "video1.mp4",
-                            "video2.mp4",
-                            "video3.mp4",
-                            "video4.mp4",
-                            "video5.mp4"
+                            "Introduction.mp4",
+                            "Experience.mp4",
+                            "Skills.mp4",
+                            "Achievement.mp4",
+                            "Contact.mp4"
                         ]
 
                     # Load video clips
