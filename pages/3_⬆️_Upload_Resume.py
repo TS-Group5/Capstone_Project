@@ -1,5 +1,6 @@
 import streamlit as st
 import base64
+import os
 from src.util.video_generation_final import video_generator, audio_generator, audio_video_merger, parse_text_to_json
 from src.util.format_summary import generate_formated_output_gemini
 from PIL import Image
@@ -82,22 +83,20 @@ if st.button("Generate Video"):
                    
                 with st.spinner("Generating Audio... Please wait!"):
                         try:
-                            audio_path = audio_generator(scenes[section]['Audio'], section)
+                            #audio_path = audio_generator(scenes[section]['Audio'], section)
                             st.success("Audio generated successfully!")
                         except Exception as e:
                             st.error(f"An error occurred: while generating audio {e}")  
                     
                 with st.spinner("Generating video... Please wait!"):
                         try:
-                            video_path = video_generator(scenes[section]['Visual'], duration, section)
+                            #video_path = video_generator(scenes[section]['Visual'], duration, section)
                             st.success("Video generated successfully!")
                         except Exception as e:
                             st.error(f"An error occurred: while generating video {e}")  
-            
-       
-        
         with st.spinner("Merging video in progress ... Please wait!"):
                 try :
+                        os.environ['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
                         audio_video_merger("Introduction.wav","Introduction.mp4", "Introduction", video_caption.get('Introduction'))
                         audio_video_merger("Experience.wav","Experience.mp4", "Experience",  video_caption.get('Experience'))
                         audio_video_merger("Skills.wav","Skills.mp4", "Skills",  video_caption.get('Skills'))
