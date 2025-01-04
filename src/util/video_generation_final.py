@@ -81,16 +81,13 @@ def image_generator(prompt):
 # Function to use GPU for audio generation
 def audio_generator(script, file_name):
     print(f"Audio prompt: {script}")
-    
-    # Ensure GPU is visible to the environment
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-    torch.device("cuda")
+
     # Preload models for Bark
     preload_models()
     
     # Check if GPU is being used (example for TensorFlow or PyTorch)
     try:
-        import torch
+
         if not torch.cuda.is_available():
             raise RuntimeError("GPU is not available. Please ensure proper GPU setup.")
         print(f"Using GPU: {torch.cuda.get_device_name(torch.cuda.current_device())}")
