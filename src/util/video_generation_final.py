@@ -78,21 +78,32 @@ def image_generator(prompt):
     return image
 
 #Audio Generator
+# Function to use GPU for audio generation
 def audio_generator(script, file_name):
+    print(f"Audio prompt: {script}")
     
-    print(f"audion prompt = {script}")
-    # Set environment variables
+    # Ensure GPU is visible to the environment
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
+    
     # Preload models for Bark
     preload_models()
+    
+    # Check if GPU is being used (example for TensorFlow or PyTorch)
+    try:
+        import torch
+        if not torch.cuda.is_available():
+            raise RuntimeError("GPU is not available. Please ensure proper GPU setup.")
+        print(f"Using GPU: {torch.cuda.get_device_name(torch.cuda.current_device())}")
+    except ImportError:
+        print("PyTorch is not installed. Ensure your library dependencies support GPU usage.")
 
     # Split the script into sentences
     sentences = nltk.sent_tokenize(script)
-
+    
     # Configuration for Bark
     GEN_TEMP = 0.6
     SPEAKER = "v2/en_speaker_6"
+    SAMPLE_RATE = 22050  # Adjust as per your requirements
     silence = np.zeros(int(0.25 * SAMPLE_RATE))  # quarter second of silence
 
     # Generate audio for each sentence
@@ -102,8 +113,9 @@ def audio_generator(script, file_name):
             sentence,
             history_prompt=SPEAKER,
             temp=GEN_TEMP,
-            min_eos_p=0.05,  # this controls how likely the generation is to end
+            min_eos_p=0.05,  # Controls how likely the generation is to end
         )
+        # Ensure semantic_to_waveform leverages GPU if supported
         audio_array = semantic_to_waveform(semantic_tokens, history_prompt=SPEAKER)
         pieces.append(audio_array)
         pieces.append(silence)
@@ -112,7 +124,8 @@ def audio_generator(script, file_name):
     final_audio = np.concatenate(pieces)
 
     # Write the concatenated audio to a WAV file
-    write_wav(file_name+".wav", SAMPLE_RATE, final_audio.astype(np.float32))
+    write_wav(file_name + ".wav", SAMPLE_RATE, final_audio.astype(np.float32))
+    print(f"Audio file saved as {file_name}.wav")
 
 #Merging the Audio Video outcomes
 def audio_video_merger(audio_input, video_input, output, text_to_add, font_size=16, font_color='white', rect_color='red', rect_opacity=0.5):
