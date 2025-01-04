@@ -58,13 +58,21 @@ def add_bg_from_local(image_path):
 
 # Add background image (adjust the filename if needed)
 add_bg_from_local("./img/resume.png")
-st.sidebar.selectbox("Select Model:", ["GPT", "T5", "RAG"]) 
-text_contents = '''
-Foo, Bar
-123, 456
-789, 000
-'''
-st.sidebar.download_button('Download Sample Resume', text_contents, 'text/csv')
+st.sidebar.markdown("### Download Resume Templates")
+template_option = st.sidebar.radio(
+    "Choose a template:",
+    ["ATS classic HR resume", "Industry manager resume"]
+)
+
+if st.sidebar.button("Download Selected Template"):
+    with open(f"./templates/{template_option}.docx", "rb") as file:
+        template_bytes = file.read()
+        st.sidebar.download_button(
+            label="Click to Download",
+            data=template_bytes,
+            file_name=f"{template_option}.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 # if  not st.session_state.authenticated :
