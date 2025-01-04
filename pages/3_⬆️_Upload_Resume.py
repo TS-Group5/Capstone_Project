@@ -172,32 +172,33 @@ if st.button("Generate Video"):
                    
                 with st.spinner("Generating Audio... Please wait!"):
                         try:
-                            #audio_path = audio_generator(scenes[section]['Audio'], section)
+                            audio_path = audio_generator(scenes[section]['Audio'], section)
                             st.success("Audio generated successfully!")
                         except Exception as e:
                             st.error(f"An error occurred: while generating audio {e}")  
                     
                 with st.spinner("Generating video... Please wait!"):
                         try:
-                            #video_path = video_generator(scenes[section]['Visual'], duration, section)
+                            video_path = video_generator(scenes[section]['Visual'], duration, section)
                             st.success("Video generated successfully!")
                         except Exception as e:
                             st.error(f"An error occurred: while generating video {e}")  
         with st.spinner("Merging video in progress ... Please wait!"):
                 try :
-                        os.environ['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
-                        audio_video_merger("Introduction.wav","Introduction.mp4", "Introduction", video_caption.get('Introduction'))
+                        os.enviroaudio_video_mergern['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
+                        ("Introduction.wav","Introduction.mp4", "Introduction", video_caption.get('Introduction'))
                         audio_video_merger("Experience.wav","Experience.mp4", "Experience",  video_caption.get('Experience'))
                         audio_video_merger("Skills.wav","Skills.mp4", "Skills",  video_caption.get('Skills'))
                         audio_video_merger("Achievement.wav","Achievement.mp4","Achievement",  video_caption.get('Achievement'))
                         audio_video_merger("Goals.wav","Goals.mp4","Goals",  video_caption.get('Goals'))
                         audio_video_merger("Contact.wav","Contact.mp4","Contact",  video_caption.get('Contact'))
                         video_paths = [
-                            "Introduction.mp4",
-                            "Experience.mp4",
-                            "Skills.mp4",
-                            "Achievement.mp4",
-                            "Contact.mp4"
+                            "src/merged_video/Introduction.mp4",
+                            "src/merged_video/Experience.mp4",
+                            "src/merged_video/Skills.mp4",
+                            "src/merged_video/Achievement.mp4",
+                            "src/merged_video/Goals.mp4",
+                            "src/merged_video/Contact.mp4"
                         ]
 
                     # Load video clips
@@ -207,7 +208,7 @@ if st.button("Generate Video"):
                         final_clip = concatenate_videoclips(video_clips, method="compose")
 
                     # Save the merged video
-                        output_path = "merged_video.mp4"
+                        output_path = "src/final_video/merged_video.mp4"
                         final_clip.write_videofile(output_path, codec="libx264", audio_codec="aac")
 
                         # Close all clips

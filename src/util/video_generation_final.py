@@ -54,7 +54,7 @@ def video_generator(prompt, video_len, file_name):
         frames.extend(chunk_frames)
 
     # Save the video
-    export_to_video(frames, file_name+".mp4", fps=fps)
+    export_to_video(frames, "src/video/"+file_name+".mp4", fps=fps)
     print("Video generated and saved as 'optimized_sequential_video.mp4'")
 
 #Image Genertor
@@ -124,7 +124,7 @@ def audio_generator(script, file_name):
     final_audio = np.concatenate(pieces)
 
     # Write the concatenated audio to a WAV file
-    write_wav(file_name + ".wav", SAMPLE_RATE, final_audio.astype(np.float32))
+    write_wav("src/audio/"+file_name + ".wav", SAMPLE_RATE, final_audio.astype(np.float32))
     print(f"Audio file saved as {file_name}.wav")
 
 #Merging the Audio Video outcomes
@@ -162,7 +162,7 @@ def audio_video_merger(audio_file, video_file, output_file, caption):
             video_clip = CompositeVideoClip([video_clip, text_clip])
 
         # Write the final video to output file
-        video_clip.write_videofile(f"{output_file}.mp4", codec="libx264", audio_codec="aac")
+        video_clip.write_videofile(f"src/merged_video/{output_file}.mp4", codec="libx264", audio_codec="aac")
 
         # Close all clips
         video_clip.close()
