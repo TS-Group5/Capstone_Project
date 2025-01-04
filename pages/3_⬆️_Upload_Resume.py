@@ -1,11 +1,8 @@
 import streamlit as st
 import base64
-#from tts_img_to_video import generate_video
 from video_generation_final import video_generator, audio_generator, audio_video_merger
-
-#from tts_audio_generation import generate_audio
-
 from PIL import Image
+
 def add_bg_from_local(image_path):
     with open(image_path, "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read())
@@ -53,7 +50,7 @@ with c2 :
         
         # Display the image
         st.image(image, caption="Uploaded Image", width=200)
-#prompt = st.text_input("Enter the video description prompt:")
+
 duration = st.slider("Duration (in seconds):", 1, 20, 10)
 fps = st.slider("Frames per second (FPS):", 8, 30, 16)
 if st.button("Generate Video"):
@@ -78,15 +75,3 @@ if st.button("Generate Video"):
             except Exception as e:
                 st.error(f"An error occurred: {e}")
                 
-# if st.button("Generate Video", type="primary"):
-#     with st.spinner('Please wait while generating the video ...'):
-#         generate_video_parallel(
-#         summary,
-#         duration=10,
-#         fps=16,
-#         num_inference_steps=25,
-#     )
-           
-#         generate_video(summary)
-#     with st.spinner('Please wait while generating the audio ...'):
-#        generate_audio(summary)

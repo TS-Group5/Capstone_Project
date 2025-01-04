@@ -1,15 +1,11 @@
 import torch
+import moviepy.editor as mp
 from diffusers import StableVideoDiffusionPipeline
 from diffusers.utils import load_image, export_to_video
 
 #merger import
 from moviepy.editor import VideoFileClip, AudioFileClip
 from moviepy.editor import *
-import moviepy.editor as mp
-
-#from moviepy.video.io.VideoFileClip import VideoFileClip
-#from moviepy.audio.io.AudioFileClip import AudioFileClip
-#from moviepy.video.fx import Loop
 
 #Audio generation
 import os
@@ -19,9 +15,11 @@ import nltk  # we'll use this to split into sentences
 from bark.generation import generate_text_semantic, preload_models
 from bark.api import semantic_to_waveform
 from bark import SAMPLE_RATE
+
 # Download the necessary NLTK data
 nltk.download('punkt')
 
+#Video Generator
 def video_generator(prompt, video_len):
     # Load the pipeline for video generation
     pipeline = StableVideoDiffusionPipeline.from_pretrained(
@@ -56,8 +54,7 @@ def video_generator(prompt, video_len):
     export_to_video(frames, "optimized_sequential_video.mp4", fps=fps)
     print("Video generated and saved as 'optimized_sequential_video.mp4'")
 
-
-#IMAGE GENERATOR
+#Image Genertor
 def image_generator(prompt):
     from diffusers import StableDiffusionPipeline
     #for video
@@ -69,9 +66,6 @@ def image_generator(prompt):
         "runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16
     )
     pipeline.to("cuda")  # Use GPU for faster inference
-
-    # Define the text prompt
-    #prompt = "A smart indian man delivering speech on natural beauty while sunset over a mountain range with a serene lake in the background."
 
     # Generate the image                                                                                                                                                                           
     print("Generating image...")
@@ -118,16 +112,6 @@ def audio_generator(script):
 
 #Merging the Audio Video outcomes
 def audio_video_merger(audio_input, video_input):
-    # Paths to your video and audio files
-    # video_path = video_input
-    # audio_path = audio_input
-    # output_path = "final_output_video.mp4"
-
-    # Load video and audio files
-    #video = VideoFileClip(video_path)
-    #audio = AudioFileClip(audio_path)
-    # Paths to your video and audio files
-    
     # Paths to your video and audio files
     video_path = "optimized_sequential_video.mp4"
     audio_path = "bark_generation5.wav"
