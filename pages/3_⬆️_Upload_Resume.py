@@ -2,7 +2,22 @@ import streamlit as st
 import base64
 from video_generation_final import video_generator, audio_generator, audio_video_merger
 from PIL import Image
-
+st.markdown(
+    """
+    <style>
+    .stFileUploader label {
+        color: white;
+    }
+    .stTextArea label {
+        color: white;
+    }
+     .stSlider label {
+        color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 def add_bg_from_local(image_path):
     with open(image_path, "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read())
