@@ -1,0 +1,26 @@
+name: CD Pipeline
+
+# Only trigger, when the build workflow succeeded i.e. CI Pipeline
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull Docker Image - T2 Medium EC2 test
+        env: 
+          DOCKER_USER: ${{ secrets.DOCKER_USER_NAME }}
+        run: sudo docker pull $DOCKER_USER/video-resume-summarization:latest
+    
+      - name: Delete Old Docker Container
+        run: sudo docker rm -f video-resume-summarization-api-container || true
+    
+      - name: Run Docker Container
+        env: 
+          DOCKER_USER: ${{ secrets.DOCKER_USER_NAME }}
+        run: sudo docker run -it -d -p 8501:8501 --name video-resume-summarization-api-container $DOCKER_USER/video-resume-summarization:latest
