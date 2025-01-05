@@ -69,7 +69,7 @@ Capstone_Project/
 
 1. Clone the repository:
    ```bash
-   git clone [repository-url]
+   git clone https://github.com/TS-Group5/Capstone_Project.git
    ```
 
 2. Install dependencies:
@@ -90,7 +90,7 @@ Capstone_Project/
 
 1. Access the web interface
 2. Log in with your credentials
-3. Upload your resume (PDF format)
+3. Upload your resume (DOCX format)
 4. Wait for the AI to process your resume
 5. Preview and download your video resume
 
