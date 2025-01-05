@@ -18,7 +18,7 @@ jobs:
         run: sudo docker pull $DOCKER_USER/video-resume-summarization:latest
     
       - name: Delete Old Docker Container
-        run: sudo docker rm -f video-resume-summarization-api-container || true
+        run: sudo docker rm -f video-resume-summarization-container || true
     
       - name: Run Docker Container
         env: 
