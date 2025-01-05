@@ -3,8 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="Video Resume generation",
     version="0.1.0",
-    package_dir={"": "src"},  # Tell setuptools packages are under src
-    packages=find_packages(where="src"),  # List all packages under src
+    package_dir={"": "."},  # Tell setuptools packages are under src
     install_requires=[
         "mysql-connector-python",
         "pyrebase4",
