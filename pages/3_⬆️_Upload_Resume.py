@@ -172,14 +172,14 @@ if st.button("Generate Video"):
                    
                 with st.spinner("Generating Audio... Please wait!"):
                         try:
-                            #audio_path = audio_generator(scenes[section]['Audio'], section)
+                            audio_path = audio_generator(scenes[section]['Audio'], section)
                             st.success("Audio generated successfully!")
                         except Exception as e:
                             st.error(f"An error occurred: while generating audio {e}")  
                     
                 with st.spinner("Generating video... Please wait!"):
                         try:
-                           # video_path = video_generator(scenes[section]['Visual'], duration, section)
+                            video_path = video_generator(scenes[section]['Visual'], duration, section)
                             st.success("Video generated successfully!")
                         except Exception as e:
                             st.error(f"An error occurred: while generating video {e}")  
