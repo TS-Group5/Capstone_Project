@@ -1,0 +1,27 @@
+name: CD Pipeline
+
+# Only trigger, when the build workflow succeeded i.e. CapstoneCI
+on:
+  workflow_run:
+    workflows: ["CapstoneCI"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull Docker Image
+        env: 
+          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
+        run: sudo docker pull $DOCKER_USER/video-resume-summarization:latest
+    
+      - name: Delete Old Docker Container
+        run: sudo docker rm -f video-resume-summarization-api-container || true
+    
+      - name: Run Docker Container
+        env: 
+          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
+        run: sudo docker run -d -p 8501:8501 --name video-resume-summarization-container $DOCKER_USER/video-resume-summarization:latest
+        
