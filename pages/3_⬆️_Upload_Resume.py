@@ -23,7 +23,56 @@ def load_config():
 # Get configuration
 config = load_config()
 API_URL = f"{config['api']['base_url']}{config['api']['endpoints']['generate_script']}"
+st.markdown("""
+    <style>
+    .tv-frame {
+        border: 10px solid black;  /* TV border color */
+        border-radius: 15px;  /* Rounded corners */
+        padding: 5px;
+        background-color: #000000; /* TV screen background color */
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8); /* Shadow for the TV effect */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .tv-screen {
+        width: 384px;  /* Width of the video */
+        height: 216px;  /* Height of the video */
+        border-radius: 10px;  /* Rounded corners of the screen */
+    }
+    </style>
+""", unsafe_allow_html=True)
+st.markdown("""
+    <style>
+             /* Reduce default padding and margin from the top */
+    .block-container {
+        padding-top: 10px; /* Adjust this value as needed */
+    }
+    .center-heading {
+        text-align: center;  /* Center the text */
+        font-size: 36px;  /* Adjust font size */
+        font-weight: bold;  /* Make the text bold */
+        margin: 0px;  /* Add space at the top */
+        color: white;  /* Set font color to white */
+        background-color: rgba(245, 245, 245, 0.5); 
+        border: 2px solid white;  /* Add a white border */
+        padding: 20px;  /* Add padding inside the rectangle */
+        border-radius: 10px;  /* Optional: Rounded corners */
+        display: inline-block;  /* Fit the content size */
+    }
+    </style>
+""", unsafe_allow_html=True)
 
+st.markdown("""
+    <style>
+    .column-button {
+        display: flex;
+        align-items: center;  /* Vertical alignment */
+        justify-content: center;  /* Horizontal alignment */
+        height: 50px;  /* Adjust height as needed */
+    }
+    </style>
+""", unsafe_allow_html=True)
 st.markdown(
     """
     <style>
@@ -34,6 +83,9 @@ st.markdown(
         color: white;
     }
      .stSlider label {
+        color: white;
+    }
+    .stRadio > label {
         color: white;
     }
     </style>
@@ -77,16 +129,73 @@ if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 # if  not st.session_state.authenticated :
 #     st.switch_page("pages\\2_🔒_Login.py")
-
-
-uploaded_file = st.file_uploader("Upload Your Resume")
-# Template type selection
-selected_template_type = st.radio(
+st.markdown('<center><h1 class="center-heading">&nbsp&nbspWelcome to SpotLightCV</h1><center>', unsafe_allow_html=True)
+st.markdown("<hr style='border: 1px solid #ccc; margin-top: 20px;'>", unsafe_allow_html=True)
+c1,c2,c3 =st.columns([1, 3,1])
+with c1:
+     selected_template_type = st.radio(
     "Select Resume Template Type:",
     ["ATS", "Industry"],
     key="template_type"
 )
-
+with c2:
+    uploaded_file = st.file_uploader("Upload Your Resume")
+# Template type selection
+with c3:
+    st.markdown('<div class="column-button">', unsafe_allow_html=True)
+    if st.button("Generate Summary"):
+        if uploaded_file is None:
+            st.error("Please upload a resume file first")
+        else:
+            with st.spinner("Generating summary..."):
+                try:
+                    logger.info(f"Starting API call with template type: {selected_template_type}")
+                    # Prepare the files for the API request
+                    files = {
+                        'file': (uploaded_file.name, uploaded_file, uploaded_file.type)
+                    }
+                    # Prepare the form data
+                    data = {
+                        'template_type': selected_template_type.lower()
+                    }
+                    
+                    logger.info("Making API request to generate script...")
+                    # Make the API request
+                    response = requests.post(
+                        API_URL,
+                        files=files,
+                        data=data
+                    )
+                    
+                    logger.info(f"API Response status code: {response.status_code}")
+                    if response.status_code == 200:
+                        # Extract the script from the response and update the summary
+                        response_data = response.json()
+                        generated_summary = response_data.get('script', '')
+                        logger.info("Successfully received script from API")
+                        
+                        # Format the summary using the new utility function
+                        formatted_summary = generate_formated_output_gemini(generated_summary)
+                        
+                        # Update session state and display success message
+                        st.session_state.summary = formatted_summary
+                        st.success("Summary generated successfully!")
+                        
+                        # Update the text area directly
+                        summary = formatted_summary
+                        logger.info("Updated summary in session state")
+                        
+                        # Use st.rerun() instead of experimental_rerun
+                        st.rerun()
+                    else:
+                        error_msg = f"Error generating summary: {response.text}"
+                        logger.error(error_msg)
+                        st.error(error_msg)
+                except Exception as e:
+                    error_msg = f"An error occurred: {str(e)}"
+                    logger.error(error_msg)
+                    st.error(error_msg)
+        st.markdown('</div>', unsafe_allow_html=True)
 # Display the summary text 
 summary = st.text_area(
     "Resume Summary",
@@ -95,132 +204,75 @@ summary = st.text_area(
 )
 
 # Generate Summary button
-if st.button("Generate Summary"):
-    if uploaded_file is None:
-        st.error("Please upload a resume file first")
-    else:
-        with st.spinner("Generating summary..."):
-            try:
-                logger.info(f"Starting API call with template type: {selected_template_type}")
-                # Prepare the files for the API request
-                files = {
-                    'file': (uploaded_file.name, uploaded_file, uploaded_file.type)
-                }
-                # Prepare the form data
-                data = {
-                    'template_type': selected_template_type.lower()
-                }
-                
-                logger.info("Making API request to generate script...")
-                # Make the API request
-                response = requests.post(
-                    API_URL,
-                    files=files,
-                    data=data
-                )
-                
-                logger.info(f"API Response status code: {response.status_code}")
-                if response.status_code == 200:
-                    # Extract the script from the response and update the summary
-                    response_data = response.json()
-                    generated_summary = response_data.get('script', '')
-                    logger.info("Successfully received script from API")
+c1,c2 =st.columns([1, 3])
+with c2:
+     message_placeholder = st.empty()
+with c1:
+    if st.button("Generate Video"):
+            video_caption = {}
+            scenes= generate_formated_output_gemini(summary,)
+            required_sections = ['Introduction', 'Experience', 'Skills', 'Achievement', 'Goals', 'Contact']
+            for section in required_sections:
+                if section in scenes:
+                    print(f"--- {scenes[section]['Caption']} ---")
                     
-                    # Format the summary using the new utility function
-                    formatted_summary = generate_formated_output_gemini(generated_summary)
+                    video_caption[section] = scenes[section]['Caption']
                     
-                    # Update session state and display success message
-                    st.session_state.summary = formatted_summary
-                    st.success("Summary generated successfully!")
-                    
-                    # Update the text area directly
-                    summary = formatted_summary
-                    logger.info("Updated summary in session state")
-                    
-                    # Use st.rerun() instead of experimental_rerun
-                    st.rerun()
-                else:
-                    error_msg = f"Error generating summary: {response.text}"
-                    logger.error(error_msg)
-                    st.error(error_msg)
-            except Exception as e:
-                error_msg = f"An error occurred: {str(e)}"
-                logger.error(error_msg)
-                st.error(error_msg)
-c1,c2 =st.columns([3, 2])
-with c1 :
-    uploaded_file = st.file_uploader("Upload Your Avatar", type=["jpg", "png", "jpeg"])
-with c2 :
-    if uploaded_file is not None:
-        # Open the uploaded image file
-        image = Image.open(uploaded_file)
-        
-        # Display the image
-        st.image(image, caption="Uploaded Image", width=200)
+                    with st.spinner("Generating Audio... Please wait!"):
+                            try:
+                                #audio_path = audio_generator(scenes[section]['Audio'], section)
+                                 message_placeholder.success("Audio generated successfully!")
+                            except Exception as e:
+                                st.error(f"An error occurred: while generating audio {e}")  
+                        
+                    with st.spinner("Generating video... Please wait!"):
+                            try:
+                                #video_path = video_generator(scenes[section]['Visual'], duration, section)
+                                 message_placeholder.success("Video generated successfully!")
+                            except Exception as e:
+                                st.error(f"An error occurred: while generating video {e}")  
+            with st.spinner("Merging video in progress ... Please wait!"):
+                    try :
+                            os.environ['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
+                            audio_video_merger(r"src/audio/Introduction.wav",r"src/video/Introduction.mp4", r"src/merged_video/Introduction", video_caption.get('Introduction'))
+                            audio_video_merger(r"src/audio/Experience.wav",r"src/video/Experience.mp4",  r"src/merged_video/Experience",  video_caption.get('Experience'))
+                            audio_video_merger(r"src/audio/Skills.wav",r"src/video/Skills.mp4",  r"src/merged_video/Skills",  video_caption.get('Skills'))
+                            audio_video_merger(r"src/audio/Achievement.wav",r"src/video/Achievement.mp4", r"src/merged_video/Achievement",  video_caption.get('Achievement'))
+                            audio_video_merger(r"src/audio/Goals.wav",r"src/video/Goals.mp4", r"src/merged_video/Goals",  video_caption.get('Goals'))
+                            audio_video_merger(r"src/audio/Contact.wav",r"src/video/Contact.mp4", r"src/merged_video/Contact",  video_caption.get('Contact'))
+                            video_paths = [
+                                r"src/merged_video/Introduction.mp4",
+                                r"src/merged_video/Experience.mp4",
+                                r"src/merged_video/Skills.mp4",
+                                r"src/merged_video/Achievement.mp4",
+                                r"src/merged_video/Goals.mp4",
+                                r"src/merged_video/Contact.mp4"
+                            ]
 
-duration = st.slider("Duration (in seconds):", 1, 20, 10)
-fps = st.slider("Frames per second (FPS):", 8, 30, 16)
-if st.button("Generate Video"):
-        video_caption = {}
-        scenes= generate_formated_output_gemini(summary,)
-        required_sections = ['Introduction', 'Experience', 'Skills', 'Achievement', 'Goals', 'Contact']
-        for section in required_sections:
-            if section in scenes:
-                print(f"--- {scenes[section]['Caption']} ---")
-                 
-                video_caption[section] = scenes[section]['Caption']
-                   
-                with st.spinner("Generating Audio... Please wait!"):
-                        try:
-                            audio_path = audio_generator(scenes[section]['Audio'], section)
-                            st.success("Audio generated successfully!")
-                        except Exception as e:
-                            st.error(f"An error occurred: while generating audio {e}")  
-                    
-                with st.spinner("Generating video... Please wait!"):
-                        try:
-                            video_path = video_generator(scenes[section]['Visual'], duration, section)
-                            st.success("Video generated successfully!")
-                        except Exception as e:
-                            st.error(f"An error occurred: while generating video {e}")  
-        with st.spinner("Merging video in progress ... Please wait!"):
-                try :
-                        os.environ['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
-                        audio_video_merger(r"src/audio/Introduction.wav",r"src/video/Introduction.mp4", r"src/merged_video/Introduction", video_caption.get('Introduction'))
-                        audio_video_merger(r"src/audio/Experience.wav",r"src/video/Experience.mp4",  r"src/merged_video/Experience",  video_caption.get('Experience'))
-                        audio_video_merger(r"src/audio/Skills.wav",r"src/video/Skills.mp4",  r"src/merged_video/Skills",  video_caption.get('Skills'))
-                        audio_video_merger(r"src/audio/Achievement.wav",r"src/video/Achievement.mp4", r"src/merged_video/Achievement",  video_caption.get('Achievement'))
-                        audio_video_merger(r"src/audio/Goals.wav",r"src/video/Goals.mp4", r"src/merged_video/Goals",  video_caption.get('Goals'))
-                        audio_video_merger(r"src/audio/Contact.wav",r"src/video/Contact.mp4", r"src/merged_video/Contact",  video_caption.get('Contact'))
-                        video_paths = [
-                            r"src/merged_video/Introduction.mp4",
-                            r"src/merged_video/Experience.mp4",
-                            r"src/merged_video/Skills.mp4",
-                            r"src/merged_video/Achievement.mp4",
-                            r"src/merged_video/Goals.mp4",
-                            r"src/merged_video/Contact.mp4"
-                        ]
+                        # Load video clips
+                            video_clips = [VideoFileClip(video) for video in video_paths]
 
-                    # Load video clips
-                        video_clips = [VideoFileClip(video) for video in video_paths]
+    # Concatenate video clips
+                            final_clip = concatenate_videoclips(video_clips, method="compose")
 
-# Concatenate video clips
-                        final_clip = concatenate_videoclips(video_clips, method="compose")
+                        # Save the merged video
+                            output_path = "src/final_video/merged_video.mp4"
+                            final_clip.write_videofile(output_path, codec="libx264", audio_codec="aac")
 
-                    # Save the merged video
-                        output_path = "src/final_video/merged_video.mp4"
-                        final_clip.write_videofile(output_path, codec="libx264", audio_codec="aac")
-
-                        # Close all clips
-                        for clip in video_clips:
-                            clip.close()
-                            final_clip.close()
+                            # Close all clips
+                            for clip in video_clips:
+                                clip.close()
+                                final_clip.close()
 
 
-                        st.success("Merging completed successfully !!")
-                        st.video(output_path)
-                except Exception as e:
-                            st.error(f"An error occurred: {e}")
-                             
+                            message_placeholder.success("Merging completed successfully !!")
+                            video_file = open(output_path, "rb")
+                            video_bytes = video_file.read()
+
+                            st.video(video_bytes)
+                                  
+                    except Exception as e:
+                                st.error(f"An error occurred: {e}")
+                                
     
                 
