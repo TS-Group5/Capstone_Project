@@ -35,3 +35,46 @@ jobs:
 
     - name: Build package
       run: python setup.py sdist bdist_wheel
+  
+  push-image:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Repo Checkout
+      uses: actions/checkout@v3
+    
+    - name: Login to Docker hub
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER_NAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASS_TOKEN }}
+      run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD 
+
+    - name: Build the Docker image
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER_NAME }}
+      run: docker build . -f Dockerfile -t $DOCKER_USER/video-resume-summarization:latest
+
+    - name: Push the Docker Image
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER_NAME }}
+      run: docker push $DOCKER_USER/video-resume-summarization:latest
+
+    - name: Logout from Docker hub
+      run: docker logout
+
+  deploy:
+    needs: [push-image]
+    runs-on: self-hosted
+    steps:
+      - name: Pull Docker Image
+        env: 
+          DOCKER_USER: ${{ secrets.DOCKER_USER_NAME }}
+        run: sudo docker pull $DOCKER_USER/video-resume-summarization:latest
+    
+      - name: Delete Old Docker Container
+        run: sudo docker rm -f video-resume-summarization-container || true
+    
+      - name: Run Docker Container
+        env: 
+          DOCKER_USER: ${{ secrets.DOCKER_USER_NAME }}
+        run: sudo docker run -d -p 8501:8501 --name video-resume-summarization-container $DOCKER_USER/video-resume-summarization:latest
