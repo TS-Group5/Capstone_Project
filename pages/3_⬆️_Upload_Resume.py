@@ -239,12 +239,12 @@ with c1:
                     try :
                             os.environ['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
                     
-                            fetch_video(get_url_by_id(1), "Introduction.pm4")
-                            fetch_video(get_url_by_id(2), "Experience.pm4")
-                            fetch_video(get_url_by_id(3), "Skills.pm4")
-                            fetch_video(get_url_by_id(4), "Achievement.pm4")
-                            fetch_video(get_url_by_id(5), "Goals.pm4")
-                            fetch_video(get_url_by_id(6), "Contact.pm4")
+                            fetch_video(get_url_by_id(1), "Introduction.mp4")
+                            fetch_video(get_url_by_id(2), "Experience.mp4")
+                            fetch_video(get_url_by_id(3), "Skills.mp4")
+                            fetch_video(get_url_by_id(4), "Achievement.mp4")
+                            fetch_video(get_url_by_id(5), "Goals.mp4")
+                            fetch_video(get_url_by_id(6), "Contact.mp4")
                             
 
                             audio_video_merger(r"src/audio/Introduction.wav",r"src/video/Introduction.mp4", r"src/merged_video/Introduction", video_caption.get('Introduction'))
