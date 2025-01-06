@@ -78,5 +78,43 @@ def insert_lipsync_data( userid, scene, type_, url):
         if conn:
             conn.close()
 
+
+
+def get_url_by_id( record_id):
+    """
+    Retrieves the URL from the lipsync table based on the provided ID.
+
+    Args:
+        db_path (str): Path to the SQLite database file.
+        record_id (int): ID of the record to retrieve.
+
+    Returns:
+        str: The URL of the record if found, otherwise None.
+    """
+    try:
+        # Connect to the database
+        conn =  connect_db()
+        cursor = conn.cursor()
+
+        # Query to retrieve the URL
+        cursor.execute("SELECT url FROM lipsync WHERE id = ?", (record_id,))
+        result = cursor.fetchone()
+
+        # Check if a result was found
+        if result:
+            return result[0]  # URL is in the first column of the result
+        else:
+            print(f"No record found with ID {record_id}.")
+            return None
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+        return None
+    finally:
+        # Close the connection
+        if conn:
+            conn.close()
+          # ID of the record you want to retrieve
+
+
 # Example usage
 #insert_lipsync_data(db_path, "user123", "scene1", "video", "https://example.com/new-url")

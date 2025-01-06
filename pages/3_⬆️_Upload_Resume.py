@@ -9,8 +9,9 @@ import yaml
 import os
 from moviepy.editor import AudioFileClip, VideoFileClip, TextClip, CompositeVideoClip
 from moviepy.editor import concatenate_videoclips
-
+from db.db_connector import get_url_by_id
 # Configure logging
+from src.util.lipsync import fetch_video
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -237,6 +238,15 @@ with c1:
             with st.spinner("Merging video in progress ... Please wait!"):
                     try :
                             os.environ['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
+                    
+                            fetch_video(get_url_by_id(1), "Introduction.pm4")
+                            fetch_video(get_url_by_id(2), "Experience.pm4")
+                            fetch_video(get_url_by_id(3), "Skills.pm4")
+                            fetch_video(get_url_by_id(4), "Achievement.pm4")
+                            fetch_video(get_url_by_id(5), "Goals.pm4")
+                            fetch_video(get_url_by_id(6), "Contact.pm4")
+                            
+
                             audio_video_merger(r"src/audio/Introduction.wav",r"src/video/Introduction.mp4", r"src/merged_video/Introduction", video_caption.get('Introduction'))
                             audio_video_merger(r"src/audio/Experience.wav",r"src/video/Experience.mp4",  r"src/merged_video/Experience",  video_caption.get('Experience'))
                             audio_video_merger(r"src/audio/Skills.wav",r"src/video/Skills.mp4",  r"src/merged_video/Skills",  video_caption.get('Skills'))
