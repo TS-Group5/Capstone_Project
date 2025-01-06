@@ -9,7 +9,7 @@ import yaml
 import os
 from moviepy.editor import AudioFileClip, VideoFileClip, TextClip, CompositeVideoClip
 from moviepy.editor import concatenate_videoclips
-from db.db_connector import get_url_by_id
+from src.db.db_connector import get_url_by_id
 # Configure logging
 from src.util.lipsync import fetch_video
 logging.basicConfig(level=logging.INFO)
