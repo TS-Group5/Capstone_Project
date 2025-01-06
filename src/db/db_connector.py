@@ -1,7 +1,7 @@
 from sqlite_connector import SQLiteConnector
 import sqlite3
 def connect_db():
-    return  sqlite3.connect("db/quiz_db.db")
+    return  sqlite3.connect("db/resume_db.db")
 def check_login(email, password):
     print("email",email)
     print("password",password)
