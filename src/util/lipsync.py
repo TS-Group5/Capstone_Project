@@ -27,8 +27,11 @@ def generate_lip_sync(vido_url, audio_url):
     }
 
     response = requests.request("POST", url, json=payload, headers=headers)
+    response_data = response.json()
+        # Extract the 'id'
+    response_id = response_data.get("id")
 
-    return response
+    return response_id
 
 
 

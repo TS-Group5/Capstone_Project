@@ -17,6 +17,7 @@ from bark.generation import generate_text_semantic, preload_models
 from bark.api import semantic_to_waveform
 from bark import SAMPLE_RATE
 from src.util.aws_helper import upload_image_to_public_s3
+from src.util.lipsync import generate_lip_sync
 
 # Download the necessary NLTK data
 nltk.data.path.append('/Users/anilkumar/nltk_data/tokenizers/punkt')
@@ -131,7 +132,8 @@ def audio_generator(script, file_name, user_id):
     bucket_name = "aimlops-cohort3-group5-capstone-project"
     public_url = upload_image_to_public_s3(file_name, bucket_name)
     if public_url:
-        insert_lipsync_data( user_id, file_name, "audio", public_url)
+        response_id=generate_lip_sync("https://aimlops-cohort3-group5-capstone-project.s3.ap-south-1.amazonaws.com/male3.mp4", public_url)
+        insert_lipsync_data( user_id, file_name, "audio", response_id)
         print("Public URL of the uploaded file:", public_url)	
 
     print(f"Audio file saved as {file_name}.wav")
