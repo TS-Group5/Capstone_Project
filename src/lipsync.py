@@ -1,3 +1,38 @@
+import requests
+def generate_lip_sync(vido_url, audio_url):
+
+    url = "https://api.sync.so/v2/generate"
+
+    payload = {
+        "model": "lipsync-1.7.1",
+        "input": [
+            {
+                "type": "video",
+                "url": vido_url
+                #"url": "https://aimlops-cohort3-group5-capstone-project.s3.ap-south-1.amazonaws.com/male3.mp4"
+            },
+            {
+                "type": "audio",
+                "url": audio_url
+                #"url": "https://aimlops-cohort3-group5-capstone-project.s3.ap-south-1.amazonaws.com/Introduction.wav"
+            }
+        ],
+        "options": {"output_format": "mp4"},
+        "webhookUrl": "https://your-server.com/webhook"
+    }
+
+    headers = {
+        "x-api-key": "sk-FcYNXOB3T22njoBg794L_w.KVnki7dwD4ZLf7yd6EB0G-rWoo_9SNeS",
+        "Content-Type": "application/json"
+    }
+
+    response = requests.request("POST", url, json=payload, headers=headers)
+
+    return response
+
+
+
+
 def fetch_video(api_url, api_key, video_id, local_file_name):
     """
     Fetches video details from the API and downloads the video if the status is COMPLETED.

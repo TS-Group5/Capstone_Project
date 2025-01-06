@@ -115,6 +115,8 @@ template_option = st.sidebar.radio(
     "Choose a template:",
     ["ATS classic HR resume", "Industry manager resume"]
 )
+if 'user_info' in st.session_state :
+    user_info=st.session_state.user_info
 
 if st.sidebar.button("Download Selected Template"):
     with open(f"./templates/{template_option}.docx", "rb") as file:
@@ -220,7 +222,8 @@ with c1:
                     
                     with st.spinner("Generating Audio... Please wait!"):
                             try:
-                                #audio_path = audio_generator(scenes[section]['Audio'], section)
+                                 audio_path = audio_generator(scenes[section]['Audio'], section,user_info.get("id") )
+                                 
                                  message_placeholder.success("Audio generated successfully!")
                             except Exception as e:
                                 st.error(f"An error occurred: while generating audio {e}")  

@@ -4,11 +4,11 @@ import re
 import moviepy.editor as mp
 from diffusers import StableVideoDiffusionPipeline
 from diffusers.utils import export_to_video
-
+from src.db.db_connector import insert_lipsync_data
 #merger import
 from moviepy.editor import VideoFileClip, AudioFileClip
 from moviepy.editor import *
-
+from src.util.aws_helper import upload_image_to_public_s3
 #Audio generation
 from scipy.io.wavfile import write as write_wav
 import numpy as np
@@ -16,13 +16,14 @@ import nltk  # we'll use this to split into sentences
 from bark.generation import generate_text_semantic, preload_models
 from bark.api import semantic_to_waveform
 from bark import SAMPLE_RATE
+from src.util.aws_helper import upload_image_to_public_s3
 
 # Download the necessary NLTK data
 nltk.data.path.append('/Users/anilkumar/nltk_data/tokenizers/punkt')
 nltk.download('punkt')
 
 #Video Generator
-def video_generator(prompt, video_len, file_name):
+def video_generator(prompt, file_name):
     # Load the pipeline for video generation
     print(f"video prompt = {prompt}")
     pipeline = StableVideoDiffusionPipeline.from_pretrained(
@@ -38,7 +39,7 @@ def video_generator(prompt, video_len, file_name):
     # Define parameters
     generator = torch.manual_seed(42)
     fps = 15  # Lower FPS for optimization
-    duration = video_len  # 10 seconds of video
+    duration = 10  # 10 seconds of video
     num_frames = fps * duration
     decode_chunk_size = 64  # Frames generated per chunk
 
@@ -79,7 +80,7 @@ def image_generator(prompt):
 
 #Audio Generator
 # Function to use GPU for audio generation
-def audio_generator(script, file_name):
+def audio_generator(script, file_name, user_id):
     print(f"Audio prompt: {script}")
     
     # Ensure GPU is visible to the environment
@@ -125,6 +126,14 @@ def audio_generator(script, file_name):
 
     # Write the concatenated audio to a WAV file
     write_wav("src/audio/"+file_name + ".wav", SAMPLE_RATE, final_audio.astype(np.float32))
+    #upload the auto to s3 for lipsync
+    file_name = "src/audio/"+file_name + ".wav"
+    bucket_name = "aimlops-cohort3-group5-capstone-project"
+    public_url = upload_image_to_public_s3(file_name, bucket_name)
+    if public_url:
+        insert_lipsync_data( user_id, file_name, "audio", public_url)
+        print("Public URL of the uploaded file:", public_url)	
+
     print(f"Audio file saved as {file_name}.wav")
 
 #Merging the Audio Video outcomes
@@ -163,7 +172,7 @@ def audio_video_merger(audio_file, video_file, output_file, caption=None):
         # Close all clips
         video_clip.close()
         audio_clip.close()
-
+        
     except Exception as e:
         print(f"An error occurred while merging {audio_file} and {video_file}: {e}")
 
