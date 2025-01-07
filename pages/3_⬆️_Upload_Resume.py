@@ -262,7 +262,7 @@ with c1:
                     
                     with st.spinner("Generating Audio... Please wait!"):
                             try:
-                                 #audio_path = audio_generator(scenes[section]['Audio'], section,user_info.get("id") )
+                                 audio_path = audio_generator(scenes[section]['Audio'], section,user_info.get("id") )
                                  
                                  message_placeholder.success("Audio generated successfully!")
                             except Exception as e:
