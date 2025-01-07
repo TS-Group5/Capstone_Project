@@ -16,7 +16,7 @@ from src.util.overlap import vdo_with_circular_bgvdo
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 from moviepy.config import change_settings
-change_settings({"IMAGEMAGICK_BINARY": r"/usr/local/bin/magick"})
+change_settings({"IMAGEMAGICK_BINARY": r"C:/Program Files/ImageMagick-7.1.1-Q16/magick.exe"})
 # Load configuration
 def load_config():
     config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.yaml')
@@ -132,8 +132,8 @@ if st.sidebar.button("Download Selected Template"):
         )
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
-# if  not st.session_state.authenticated :
-#     st.switch_page("pages\\2_🔒_Login.py")
+if  not st.session_state.authenticated :
+    st.switch_page("pages\\2_🔒_Login.py")
 st.markdown('<center><h1 class="center-heading">&nbsp&nbspWelcome to SpotLightCV</h1><center>', unsafe_allow_html=True)
 st.markdown("<hr style='border: 1px solid #ccc; margin-top: 20px;'>", unsafe_allow_html=True)
 
