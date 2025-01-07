@@ -15,7 +15,8 @@ from src.util.lipsync import fetch_video
 from src.util.overlap import vdo_with_circular_bgvdo
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+from moviepy.config import change_settings
+change_settings({"IMAGEMAGICK_BINARY": r"C:/Program Files/ImageMagick-7.1.1-Q16/magick.exe"})
 # Load configuration
 def load_config():
     config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.yaml')
@@ -275,21 +276,22 @@ with c1:
                                 st.error(f"An error occurred: while generating video {e}")  
             with st.spinner("Merging video in progress ... Please wait!"):
                     try :
-                            os.environ['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
-                    
+                            #os.environ['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
+                            print(f"working..........."+scenes['Introduction']['Caption'])
+
                             # fetch_video(get_url_by_id(1), "Introduction.mp4")
                             # fetch_video(get_url_by_id(2), "Experience.mp4")
                             # fetch_video(get_url_by_id(3), "Skills.mp4")
                             # fetch_video(get_url_by_id(4), "Achievement.mp4")
-                            # fetch_video(get_url_by_id(5), "Goals.mp4")
+                            # fetch_video(get_url_byid(5), "Goals.mp4")
                             # fetch_video(get_url_by_id(6), "Contact.mp4")
-                            
-                            vdo_with_circular_bgvdo(r"src/video/Introduction.mp4", r"src/avatar_video/Introduction.mp4", r"src/merged_video/Introduction.mp4",150, 20, 20)
-                            vdo_with_circular_bgvdo(r"src/video/Experience.mp4", r"src/avatar_video/Experience.mp4", r"src/merged_video/Experience.mp4",150, 20, 20)
-                            vdo_with_circular_bgvdo(r"src/video/Skills.mp4", r"src/avatar_video/Skills.mp4", r"src/merged_video/Skills.mp4",150, 20, 20)
-                            vdo_with_circular_bgvdo(r"src/video/Achievement.mp4", r"src/avatar_video/Achievement.mp4", r"src/merged_video/Achievement.mp4",150, 20, 20)
-                            vdo_with_circular_bgvdo(r"src/video/Goals.mp4", r"src/avatar_video/Goals.mp4", r"src/merged_video/Goals.mp4",150, 20, 20)
-                            vdo_with_circular_bgvdo(r"src/video/Contact.mp4", r"src/avatar_video/Contact.mp4", r"src/merged_video/Contact.mp4",150, 20, 20)
+                          
+                            vdo_with_circular_bgvdo(r"src/video/Introduction.mp4", r"src/avatar_video/Introduction.mp4", r"src/merged_video/Introduction.mp4",150, 20, 20, scenes['Introduction']['Caption'])
+                            vdo_with_circular_bgvdo(r"src/video/Experience.mp4", r"src/avatar_video/Experience.mp4", r"src/merged_video/Experience.mp4",150, 20, 20, scenes['Experience']['Caption'])
+                            vdo_with_circular_bgvdo(r"src/video/Skills.mp4", r"src/avatar_video/Skills.mp4", r"src/merged_video/Skills.mp4",150, 20, 20, scenes['Skills']['Caption'])
+                            vdo_with_circular_bgvdo(r"src/video/Achievement.mp4", r"src/avatar_video/Achievement.mp4", r"src/merged_video/Achievement.mp4",150, 20, 20, scenes['Achievement']['Caption'])
+                            vdo_with_circular_bgvdo(r"src/video/Goals.mp4", r"src/avatar_video/Goals.mp4", r"src/merged_video/Goals.mp4",150, 20, 20, scenes['Goals']['Caption'])
+                            vdo_with_circular_bgvdo(r"src/video/Contact.mp4", r"src/avatar_video/Contact.mp4", r"src/merged_video/Contact.mp4",150, 20, 20, scenes['Contact']['Caption'])
                           
                             # audio_video_merger(r"src/audio/Introduction.wav",r"src/video/Introduction.mp4", r"src/merged_video/Introduction", video_caption.get('Introduction'))
                             # audio_video_merger(r"src/audio/Experience.wav",r"src/video/Experience.mp4",  r"src/merged_video/Experience",  video_caption.get('Experience'))

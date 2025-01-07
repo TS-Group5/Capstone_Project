@@ -16,4 +16,5 @@ requests
 PyYAML
 mediapipe
 protobuf
+imageio[pyav]
 

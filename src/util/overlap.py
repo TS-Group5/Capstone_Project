@@ -1,4 +1,4 @@
-from moviepy.editor import VideoFileClip, CompositeVideoClip, ImageClip, ColorClip
+from moviepy.editor import VideoFileClip, CompositeVideoClip, ImageClip, ColorClip, TextClip
 import numpy as np
 from moviepy.video.fx.all import speedx
 
@@ -18,7 +18,7 @@ def create_circular_mask(diameter):
 
     return mask
 
-def vdo_with_circular_bgvdo(bg_video_file, sec_bg_video_file, output_file, bgwidth, margin_bottom, margin_right):
+def vdo_with_circular_bgvdo(bg_video_file, sec_bg_video_file, output_file, bgwidth, margin_bottom, margin_right, txt_caption):
     # Load secondary video
     sec_bg_video = VideoFileClip(sec_bg_video_file)
     sec_duration = sec_bg_video.duration + 2  # Target duration for background video
@@ -44,10 +44,11 @@ def vdo_with_circular_bgvdo(bg_video_file, sec_bg_video_file, output_file, bgwid
 
     # Position the circular video and retain audio
     circular_sec_bg = circular_sec_bg.set_pos(sec_position)
-
+    text_clip = TextClip(txt_caption, fontsize=25, color='white', bg_color='black', size=(bg_w, 100))
+    text_clip = text_clip.set_pos('top',20).set_duration(5)
     # Create the final composite video
-    final = CompositeVideoClip([bg_video, circular_sec_bg])
-    final = final.set_audio(sec_bg_video.audio)
+    final = CompositeVideoClip([bg_video, circular_sec_bg, text_clip])
+   # final = final.set_audio(sec_bg_video.audio)
 
     # Write the output video with audio
     final.write_videofile(output_file, audio_codec='aac', codec="libx264")
