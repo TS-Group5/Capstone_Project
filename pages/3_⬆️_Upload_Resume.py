@@ -16,7 +16,7 @@ from src.util.overlap import vdo_with_circular_bgvdo
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 from moviepy.config import change_settings
-change_settings({"IMAGEMAGICK_BINARY": r"C:/Program Files/ImageMagick-7.1.1-Q16/magick.exe"})
+change_settings({"IMAGEMAGICK_BINARY": r"/usr/local/bin/magick"})
 # Load configuration
 def load_config():
     config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.yaml')
@@ -244,7 +244,29 @@ summary = st.text_area(
     value=st.session_state.get('summary', ''),
     height=200
 )
+c1,c2,c3=st.columns([1,3,1])
 
+with c1:
+     option = st.selectbox(
+    'Choose your Gender:',
+    ('Male', 'Female')
+)
+with c2:
+     uploaded_file = st.file_uploader("Upload your video", type=["mp4", "avi", "mov", "mkv"])
+     if uploaded_file is not None:
+    # Save the uploaded file temporarily
+        with open("temp_video.mp4", "wb") as f:
+            f.write(uploaded_file.getbuffer())
+            with c3: 
+                st.markdown(
+                    f"""
+                    <video width="100" height="100" controls>
+                        <source src="data:video/mp4;base64,{uploaded_file.read().decode('latin1')}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    """,
+                    unsafe_allow_html=True,
+                )
 # Generate Summary button
 c1,c2 =st.columns([1, 3])
 with c2:
