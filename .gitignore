@@ -2,3 +2,4 @@
 /myvenv
 /__pycache__
 .DS_Store
+/pages/__pycache__

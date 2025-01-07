@@ -14,4 +14,6 @@ imageio[ffmpeg]
 moviepy==1.0.3
 requests
 PyYAML
+mediapipe
+protobuf
 

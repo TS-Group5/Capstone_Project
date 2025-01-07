@@ -12,6 +12,7 @@ from moviepy.editor import concatenate_videoclips
 from src.db.db_connector import get_url_by_id
 # Configure logging
 from src.util.lipsync import fetch_video
+from src.util.overlap import vdo_with_circular_bgvdo
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -134,6 +135,43 @@ if "authenticated" not in st.session_state:
 #     st.switch_page("pages\\2_🔒_Login.py")
 st.markdown('<center><h1 class="center-heading">&nbsp&nbspWelcome to SpotLightCV</h1><center>', unsafe_allow_html=True)
 st.markdown("<hr style='border: 1px solid #ccc; margin-top: 20px;'>", unsafe_allow_html=True)
+
+#################################################################################################
+
+# # Main script to link video_capture.py
+# from pages.video_capture import toggle_camera_preview, record_video
+
+# # Initialize session states
+# if "preview_started" not in st.session_state:
+#     st.session_state.preview_started = False
+# if "cap" not in st.session_state:
+#     st.session_state.cap = None
+# if "video_frame_placeholder" not in st.session_state:
+#     st.session_state.video_frame_placeholder = st.empty()
+# if "background_option" not in st.session_state:
+#     st.session_state.background_option = "Black"
+
+# st.markdown("### Capture Video")
+# st.markdown("**Capture close-up video of your face reading the phrase - The quick brown fox jumps over the lazy dog.**")
+
+# # Background selection
+# image_dir = os.path.join(os.path.dirname(os.getcwd()), 'Capstone_Project', 'Images')
+# image_files = [img for img in os.listdir(image_dir) if img.lower().endswith(('png', 'jpg', 'jpeg'))]
+
+# bg_options = ["White", "Black", "Blurred", "Original"] + [f"Image: {img}" for img in image_files]
+# st.session_state.background_option = st.selectbox("Choose your background:", bg_options, index=0, format_func=lambda x: x.split(": ")[1] if x.startswith("Image: ") else x)
+
+# # Display available images as thumbnails for context
+# st.markdown("#### Background Image Previews")
+# for img in image_files:
+#     img_path = os.path.join(image_dir, img)
+#     st.image(img_path, caption=img, use_container_width=True)
+
+# camera_button = st.button("Camera Preview", on_click=toggle_camera_preview)
+# record_button = st.button("Start Recording", on_click=record_video)
+
+
+#################################################################################################
 c1,c2,c3 =st.columns([1, 3,1])
 with c1:
      selected_template_type = st.radio(
@@ -223,7 +261,7 @@ with c1:
                     
                     with st.spinner("Generating Audio... Please wait!"):
                             try:
-                                 audio_path = audio_generator(scenes[section]['Audio'], section,user_info.get("id") )
+                                 #audio_path = audio_generator(scenes[section]['Audio'], section,user_info.get("id") )
                                  
                                  message_placeholder.success("Audio generated successfully!")
                             except Exception as e:
@@ -239,20 +277,26 @@ with c1:
                     try :
                             os.environ['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
                     
-                            fetch_video(get_url_by_id(1), "Introduction.mp4")
-                            fetch_video(get_url_by_id(2), "Experience.mp4")
-                            fetch_video(get_url_by_id(3), "Skills.mp4")
-                            fetch_video(get_url_by_id(4), "Achievement.mp4")
-                            fetch_video(get_url_by_id(5), "Goals.mp4")
-                            fetch_video(get_url_by_id(6), "Contact.mp4")
+                            # fetch_video(get_url_by_id(1), "Introduction.mp4")
+                            # fetch_video(get_url_by_id(2), "Experience.mp4")
+                            # fetch_video(get_url_by_id(3), "Skills.mp4")
+                            # fetch_video(get_url_by_id(4), "Achievement.mp4")
+                            # fetch_video(get_url_by_id(5), "Goals.mp4")
+                            # fetch_video(get_url_by_id(6), "Contact.mp4")
                             
-
-                            audio_video_merger(r"src/audio/Introduction.wav",r"src/video/Introduction.mp4", r"src/merged_video/Introduction", video_caption.get('Introduction'))
-                            audio_video_merger(r"src/audio/Experience.wav",r"src/video/Experience.mp4",  r"src/merged_video/Experience",  video_caption.get('Experience'))
-                            audio_video_merger(r"src/audio/Skills.wav",r"src/video/Skills.mp4",  r"src/merged_video/Skills",  video_caption.get('Skills'))
-                            audio_video_merger(r"src/audio/Achievement.wav",r"src/video/Achievement.mp4", r"src/merged_video/Achievement",  video_caption.get('Achievement'))
-                            audio_video_merger(r"src/audio/Goals.wav",r"src/video/Goals.mp4", r"src/merged_video/Goals",  video_caption.get('Goals'))
-                            audio_video_merger(r"src/audio/Contact.wav",r"src/video/Contact.mp4", r"src/merged_video/Contact",  video_caption.get('Contact'))
+                            vdo_with_circular_bgvdo(r"src/video/Introduction.mp4", r"src/avatar_video/Introduction.mp4", r"src/merged_video/Introduction.mp4",150, 20, 20)
+                            vdo_with_circular_bgvdo(r"src/video/Experience.mp4", r"src/avatar_video/Experience.mp4", r"src/merged_video/Experience.mp4",150, 20, 20)
+                            vdo_with_circular_bgvdo(r"src/video/Skills.mp4", r"src/avatar_video/Skills.mp4", r"src/merged_video/Skills.mp4",150, 20, 20)
+                            vdo_with_circular_bgvdo(r"src/video/Achievement.mp4", r"src/avatar_video/Achievement.mp4", r"src/merged_video/Achievement.mp4",150, 20, 20)
+                            vdo_with_circular_bgvdo(r"src/video/Goals.mp4", r"src/avatar_video/Goals.mp4", r"src/merged_video/Goals.mp4",150, 20, 20)
+                            vdo_with_circular_bgvdo(r"src/video/Contact.mp4", r"src/avatar_video/Contact.mp4", r"src/merged_video/Contact.mp4",150, 20, 20)
+                          
+                            # audio_video_merger(r"src/audio/Introduction.wav",r"src/video/Introduction.mp4", r"src/merged_video/Introduction", video_caption.get('Introduction'))
+                            # audio_video_merger(r"src/audio/Experience.wav",r"src/video/Experience.mp4",  r"src/merged_video/Experience",  video_caption.get('Experience'))
+                            # audio_video_merger(r"src/audio/Skills.wav",r"src/video/Skills.mp4",  r"src/merged_video/Skills",  video_caption.get('Skills'))
+                            # audio_video_merger(r"src/audio/Achievement.wav",r"src/video/Achievement.mp4", r"src/merged_video/Achievement",  video_caption.get('Achievement'))
+                            # audio_video_merger(r"src/audio/Goals.wav",r"src/video/Goals.mp4", r"src/merged_video/Goals",  video_caption.get('Goals'))
+                            # audio_video_merger(r"src/audio/Contact.wav",r"src/video/Contact.mp4", r"src/merged_video/Contact",  video_caption.get('Contact'))
                             video_paths = [
                                 r"src/merged_video/Introduction.mp4",
                                 r"src/merged_video/Experience.mp4",
