@@ -135,7 +135,7 @@ if st.sidebar.button("Download Selected Template"):
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 if  not st.session_state.authenticated :
-    st.switch_page("pages\\2_🔒_Login.py")
+    st.switch_page("app\\pages\\2_🔒_Login.py")
 st.markdown('<center><h1 class="center-heading">&nbsp&nbspWelcome to SpotLightCV</h1><center>', unsafe_allow_html=True)
 st.markdown("<hr style='border: 1px solid #ccc; margin-top: 20px;'>", unsafe_allow_html=True)
 
