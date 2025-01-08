@@ -41,12 +41,11 @@ def check_login(email, password):
     except Exception as e:
         print(f"Error occurred while checking login: {e}")
         return None  # Return None in case of any error
-def insert_lipsync_data( userid, scene, type_, url):
+def insert_lipsync_data(userid, scene, type_, url):
     """
     Inserts a new record into the lipsync table or updates the URL if a record already exists.
 
     Args:
-        db_path (str): Path to the SQLite database file.
         userid (str): User ID.
         scene (str): Scene identifier.
         type_ (str): Type of data (e.g., video, audio).
@@ -54,18 +53,14 @@ def insert_lipsync_data( userid, scene, type_, url):
     """
     try:
         # Connect to the SQLite database
-        conn =  connect_db()
+        conn = connect_db()
         cursor = conn.cursor()
 
-
-        # Insert or update the record
+        # Insert or replace the record
         cursor.execute("""
         INSERT OR REPLACE INTO lipsync (scene, type, url, userid)
-        VALUES (
-            (SELECT id FROM lipsync WHERE userid = ? AND scene = ? AND type = ?),
-            ?, ?, ?, ?
-        )
-        """, (userid, scene, type_, scene, type_, url, userid))
+        VALUES (?, ?, ?, ?)
+        """, (scene, type_, url, userid))
 
         # Commit the transaction
         conn.commit()
@@ -77,7 +72,6 @@ def insert_lipsync_data( userid, scene, type_, url):
         # Close the connection
         if conn:
             conn.close()
-
 
 
 def get_url_by_id( record_id):
