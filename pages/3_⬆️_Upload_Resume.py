@@ -247,7 +247,7 @@ summary = st.text_area(
 c1,c2,c3=st.columns([1,3,1])
 
 with c1:
-     option = st.selectbox(
+     gender = st.selectbox(
     'Choose your Gender:',
     ('Male', 'Female')
 )
@@ -284,7 +284,7 @@ with c1:
                     
                     with st.spinner("Generating Audio... Please wait!"):
                             try:
-                                 audio_path = audio_generator(scenes[section]['Audio'], section,user_info.get("id") )
+                                 audio_path = audio_generator(scenes[section]['Audio'], section,user_info.get("id"), gender )
                                  
                                  message_placeholder.success("Audio generated successfully!")
                             except Exception as e:
