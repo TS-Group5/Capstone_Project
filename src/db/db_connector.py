@@ -110,7 +110,6 @@ def get_url_by_id( record_id):
           # ID of the record you want to retrieve
 
 
-
 def getKey(key):
 
     try:
@@ -139,6 +138,3 @@ def getKey(key):
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
         return None
-
-# Example usage
-#insert_lipsync_data(db_path, "user123", "scene1", "video", "https://example.com/new-url")

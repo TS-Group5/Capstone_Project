@@ -17,7 +17,7 @@ from bark.api import semantic_to_waveform
 from bark import SAMPLE_RATE
 from src.util.aws_helper import upload_image_to_public_s3
 from src.util.lipsync import generate_lip_sync
-from src.util.properties  import getKey
+from src.db.db_connector  import getKey
 # Download the necessary NLTK data
 nltk.data.path.append(getKey("nltk_data_path"))
 nltk.download('punkt')

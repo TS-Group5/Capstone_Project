@@ -2,7 +2,7 @@ import boto3
 from botocore.config import Config
 from botocore.exceptions import ClientError
 import os
-
+from src.db.db_connector  import getKey
 
 def upload_image_to_public_s3(file_name, bucket_name, object_name=None, region='ap-south-1'):
 
@@ -12,8 +12,8 @@ def upload_image_to_public_s3(file_name, bucket_name, object_name=None, region='
     # Configure S3 client with your AWS credentials
     s3_client = boto3.client('s3',
                             region_name=region,
-                            aws_access_key_id='',  # Replace with your Access Key ID
-                            aws_secret_access_key='')  # Replace with your Secret Access Key
+                            aws_access_key_id=getKey("aws_access_key_id"),  # Replace with your Access Key ID
+                            aws_secret_access_key=getKey("aws_secret_access_key"))  # Replace with your Secret Access Key
 
     try:
         #Upload the file

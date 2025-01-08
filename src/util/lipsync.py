@@ -1,5 +1,7 @@
 import requests
-from src.util.properties  import getKey
+from src.db.db_connector  import getKey
+
+
 def generate_lip_sync(vido_url, audio_url):
 
     url = getKey("sync_url_create")
