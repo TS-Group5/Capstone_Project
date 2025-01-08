@@ -81,13 +81,13 @@ def image_generator(prompt):
 
 #Audio Generator
 # Function to use GPU for audio generation
-def audio_generator(script, file_name, user_id):
+def audio_generator(script, file_name, user_id, gender):
     print(f"Audio prompt: {script}")
     
     # Ensure GPU is visible to the environment
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     
-    # Preload models for Bark
+    # Preload models for Bark   
     preload_models()
     
     # Check if GPU is being used (example for TensorFlow or PyTorch)
@@ -107,7 +107,8 @@ def audio_generator(script, file_name, user_id):
     SPEAKER = "v2/en_speaker_6"
     SAMPLE_RATE = 22050  # Adjust as per your requirements
     silence = np.zeros(int(0.25 * SAMPLE_RATE))  # quarter second of silence
-
+    if gender == "Female":
+       SPEAKER= "v2/en_speaker_9"
     # Generate audio for each sentence
     pieces = []
     for sentence in sentences:
