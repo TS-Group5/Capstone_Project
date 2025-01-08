@@ -136,9 +136,11 @@ def audio_generator(script, file_name, user_id, gender,avatart_aws_url):
     final_audio = np.concatenate(pieces)
 
     # Write the concatenated audio to a WAV file
-    write_wav("src/audio/"+file_name + ".wav", SAMPLE_RATE, final_audio.astype(np.float32))
+    write_wav("src/audio/"+file_name +".wav", SAMPLE_RATE, final_audio.astype(np.float32))
+    
     #upload the auto to s3 for lipsync
     file_name = "src/audio/"+file_name + ".wav"
+    print("audio file name  "+file_name)
     bucket_name = "aimlops-cohort3-group5-capstone-project"
     public_audio_url = upload_image_to_public_s3(file_name, bucket_name)
     if public_audio_url:
