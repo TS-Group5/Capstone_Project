@@ -60,7 +60,7 @@ def insert_lipsync_data( userid, scene, type_, url):
 
         # Insert or update the record
         cursor.execute("""
-        INSERT OR REPLACE INTO lipsync (id, scene, type, url, userid)
+        INSERT OR REPLACE INTO lipsync (scene, type, url, userid)
         VALUES (
             (SELECT id FROM lipsync WHERE userid = ? AND scene = ? AND type = ?),
             ?, ?, ?, ?
