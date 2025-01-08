@@ -5,15 +5,7 @@ import os
 
 
 def upload_image_to_public_s3(file_name, bucket_name, object_name=None, region='ap-south-1'):
-    """
-    Uploads an image to a public S3 bucket without requiring credentials.
 
-    :param file_name: Path to the local file to upload.
-    :param bucket_name: Name of the S3 bucket.
-    :param object_name: S3 object name (default: file_name).
-    :param region: AWS region where the bucket is located.
-    :return: Public URL of the uploaded image or None if the upload fails.
-    """
     if object_name is None:
         object_name = file_name.split("/")[-1]
 

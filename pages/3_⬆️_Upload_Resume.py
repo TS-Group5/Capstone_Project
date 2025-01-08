@@ -13,6 +13,7 @@ from src.db.db_connector import get_url_by_id
 # Configure logging
 from src.util.lipsync import fetch_video
 from src.util.overlap import vdo_with_circular_bgvdo
+from src.util.aws_helper import upload_image_to_public_s3
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 from moviepy.config import change_settings
@@ -26,6 +27,7 @@ def load_config():
 # Get configuration
 config = load_config()
 API_URL = f"{config['api']['base_url']}{config['api']['endpoints']['generate_script']}"
+
 st.markdown("""
     <style>
     .tv-frame {
@@ -238,41 +240,53 @@ with c3:
                     logger.error(error_msg)
                     st.error(error_msg)
         st.markdown('</div>', unsafe_allow_html=True)
+c1,c2 =st.columns([4,1])
 # Display the summary text 
-summary = st.text_area(
-    "Resume Summary",
-    value=st.session_state.get('summary', ''),
-    height=200
-)
-c1,c2,c3=st.columns([1,3,1])
+with c1:
+    summary = st.text_area(
+        "Resume Summary",
+        value=st.session_state.get('summary', ''),
+        height=200
+    )
+
 
 with c1:
+    
+     uploaded_file = st.file_uploader("Upload your avatar(video)", type=["mp4"])
+with c2:
+   
      gender = st.selectbox(
     'Choose your Gender:',
     ('Male', 'Female')
 )
 with c2:
-     uploaded_file = st.file_uploader("Upload your video", type=["mp4", "avi", "mov", "mkv"])
-     if uploaded_file is not None:
-    # Save the uploaded file temporarily
-        with open("temp_video.mp4", "wb") as f:
+    if uploaded_file is not None:
+        avatar_path = "src/avatar_video/avatar.mp4"
+    
+    # Save the uploaded video file locally
+        with open(avatar_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
-            with c3: 
-                st.markdown(
-                    f"""
-                    <video width="100" height="100" controls>
-                        <source src="data:video/mp4;base64,{uploaded_file.read().decode('latin1')}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                    """,
-                    unsafe_allow_html=True,
-                )
+        st.video(uploaded_file)
+    else:
+        if gender =="Male":
+            st.video("src/avatar_video/male_afatar.mp4")
+        else :
+              st.video("src/avatar_video/female_avatar.mp4")
+             
+    st.text("Your Avatar")
+     
 # Generate Summary button
-c1,c2 =st.columns([1, 3])
+
+message_placeholder = st.empty()
+public_url= None
 with c2:
-     message_placeholder = st.empty()
-with c1:
+    st.markdown('<div class="column-button">', unsafe_allow_html=True)
     if st.button("Generate Video"):
+            #upload avatar
+            if uploaded_file is not None:
+                bucket_name = "aimlops-cohort3-group5-capstone-project"
+                public_url = upload_image_to_public_s3(avatar_path, bucket_name)
+                print(f"aws url ={public_url}")
             video_caption = {}
             scenes= generate_formated_output_gemini(summary,)
             required_sections = ['Introduction', 'Experience', 'Skills', 'Achievement', 'Goals', 'Contact']
@@ -280,11 +294,10 @@ with c1:
                 if section in scenes:
                     print(f"--- {scenes[section]['Caption']} ---")
                     
-                    video_caption[section] = scenes[section]['Caption']
-                    
                     with st.spinner("Generating Audio... Please wait!"):
                             try:
-                                 audio_path = audio_generator(scenes[section]['Audio'], section,user_info.get("id"), gender )
+                                 avatart_aws_url=public_url
+                                 audio_path = audio_generator(scenes[section]['Audio'], section,user_info.get("id"), gender,avatart_aws_url )
                                  
                                  message_placeholder.success("Audio generated successfully!")
                             except Exception as e:
@@ -301,12 +314,6 @@ with c1:
                             #os.environ['IMAGEMAGICK_BINARY'] = r'src\util\ImageMagick-7.1.1-43-Q16-x64-dll.exe'
                             print(f"working..........."+scenes['Introduction']['Caption'])
 
-                            # fetch_video(get_url_by_id(1), "Introduction.mp4")
-                            # fetch_video(get_url_by_id(2), "Experience.mp4")
-                            # fetch_video(get_url_by_id(3), "Skills.mp4")
-                            # fetch_video(get_url_by_id(4), "Achievement.mp4")
-                            # fetch_video(get_url_byid(5), "Goals.mp4")
-                            # fetch_video(get_url_by_id(6), "Contact.mp4")
                           
                             vdo_with_circular_bgvdo(r"src/video/Introduction.mp4", r"src/avatar_video/Introduction.mp4", r"src/merged_video/Introduction.mp4",150, 20, 20, scenes['Introduction']['Caption'])
                             vdo_with_circular_bgvdo(r"src/video/Experience.mp4", r"src/avatar_video/Experience.mp4", r"src/merged_video/Experience.mp4",150, 20, 20, scenes['Experience']['Caption'])
@@ -315,12 +322,6 @@ with c1:
                             vdo_with_circular_bgvdo(r"src/video/Goals.mp4", r"src/avatar_video/Goals.mp4", r"src/merged_video/Goals.mp4",150, 20, 20, scenes['Goals']['Caption'])
                             vdo_with_circular_bgvdo(r"src/video/Contact.mp4", r"src/avatar_video/Contact.mp4", r"src/merged_video/Contact.mp4",150, 20, 20, scenes['Contact']['Caption'])
                           
-                            # audio_video_merger(r"src/audio/Introduction.wav",r"src/video/Introduction.mp4", r"src/merged_video/Introduction", video_caption.get('Introduction'))
-                            # audio_video_merger(r"src/audio/Experience.wav",r"src/video/Experience.mp4",  r"src/merged_video/Experience",  video_caption.get('Experience'))
-                            # audio_video_merger(r"src/audio/Skills.wav",r"src/video/Skills.mp4",  r"src/merged_video/Skills",  video_caption.get('Skills'))
-                            # audio_video_merger(r"src/audio/Achievement.wav",r"src/video/Achievement.mp4", r"src/merged_video/Achievement",  video_caption.get('Achievement'))
-                            # audio_video_merger(r"src/audio/Goals.wav",r"src/video/Goals.mp4", r"src/merged_video/Goals",  video_caption.get('Goals'))
-                            # audio_video_merger(r"src/audio/Contact.wav",r"src/video/Contact.mp4", r"src/merged_video/Contact",  video_caption.get('Contact'))
                             video_paths = [
                                 r"src/merged_video/Introduction.mp4",
                                 r"src/merged_video/Experience.mp4",
@@ -350,7 +351,7 @@ with c1:
                             video_file = open(output_path, "rb")
                             video_bytes = video_file.read()
 
-                            st.video(video_bytes)
+                            st.sidebar.video(video_bytes)
                                   
                     except Exception as e:
                                 st.error(f"An error occurred: {e}")

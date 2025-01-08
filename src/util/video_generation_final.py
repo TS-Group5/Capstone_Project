@@ -8,7 +8,6 @@ from src.db.db_connector import insert_lipsync_data
 #merger import
 from moviepy.editor import VideoFileClip, AudioFileClip
 from moviepy.editor import *
-from src.util.aws_helper import upload_image_to_public_s3
 #Audio generation
 from scipy.io.wavfile import write as write_wav
 import numpy as np
@@ -81,7 +80,7 @@ def image_generator(prompt):
 
 #Audio Generator
 # Function to use GPU for audio generation
-def audio_generator(script, file_name, user_id, gender):
+def audio_generator(script, file_name, user_id, gender,avatart_aws_url):
     print(f"Audio prompt: {script}")
     
     # Ensure GPU is visible to the environment
@@ -109,6 +108,16 @@ def audio_generator(script, file_name, user_id, gender):
     silence = np.zeros(int(0.25 * SAMPLE_RATE))  # quarter second of silence
     if gender == "Female":
        SPEAKER= "v2/en_speaker_9"
+       if avatart_aws_url is  None:
+           avatart_aws_url="https://aimlops-cohort3-group5-capstone-project.s3.ap-south-1.amazonaws.com/male3.mp4"
+    else :
+        SPEAKER= "v2/en_speaker_6"
+        if avatart_aws_url is  None:
+           avatart_aws_url="https://aimlops-cohort3-group5-capstone-project.s3.ap-south-1.amazonaws.com/female2.mp4"
+
+    print(f"avatar url ===={avatart_aws_url}")
+
+   
     # Generate audio for each sentence
     pieces = []
     for sentence in sentences:
@@ -131,11 +140,11 @@ def audio_generator(script, file_name, user_id, gender):
     #upload the auto to s3 for lipsync
     file_name = "src/audio/"+file_name + ".wav"
     bucket_name = "aimlops-cohort3-group5-capstone-project"
-    public_url = upload_image_to_public_s3(file_name, bucket_name)
-    if public_url:
-        response_id=generate_lip_sync("https://aimlops-cohort3-group5-capstone-project.s3.ap-south-1.amazonaws.com/male3.mp4", public_url)
+    public_audio_url = upload_image_to_public_s3(file_name, bucket_name)
+    if public_audio_url:
+        response_id=generate_lip_sync("https://aimlops-cohort3-group5-capstone-project.s3.ap-south-1.amazonaws.com/male3.mp4", public_audio_url)
         insert_lipsync_data( user_id, file_name, "audio", response_id)
-        print("Public URL of the uploaded file:", public_url)	
+        print("Public URL of the uploaded file:", public_audio_url)	
 
     print(f"Audio file saved as {file_name}.wav")
 
