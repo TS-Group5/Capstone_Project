@@ -110,5 +110,35 @@ def get_url_by_id( record_id):
           # ID of the record you want to retrieve
 
 
+
+def getKey(key):
+
+    try:
+        # Connect to the SQLite database
+        conn = connect_db()
+        cursor = conn.cursor()
+        # Query to fetch the value for the provided key
+        cursor.execute("""
+        SELECT value
+        FROM properties
+        WHERE key = ?
+        """, (key,))
+        
+        # Fetch the result
+        result = cursor.fetchone()
+
+        # Close the connection
+        conn.close()
+
+        # Return the value if a result is found
+        if result:
+            return result[0]
+        else:
+            return None
+
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+        return None
+
 # Example usage
 #insert_lipsync_data(db_path, "user123", "scene1", "video", "https://example.com/new-url")
