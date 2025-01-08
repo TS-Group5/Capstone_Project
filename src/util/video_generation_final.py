@@ -17,9 +17,9 @@ from bark.api import semantic_to_waveform
 from bark import SAMPLE_RATE
 from src.util.aws_helper import upload_image_to_public_s3
 from src.util.lipsync import generate_lip_sync
-
+from src.util.properties  import getKey
 # Download the necessary NLTK data
-nltk.data.path.append('/Users/anilkumar/nltk_data/tokenizers/punkt')
+nltk.data.path.append(getKey("nltk_data_path"))
 nltk.download('punkt')
 
 #Video Generator
@@ -109,11 +109,11 @@ def audio_generator(script, file_name, user_id, gender,avatart_aws_url):
     if gender == "Female":
        SPEAKER= "v2/en_speaker_9"
        if avatart_aws_url is  None:
-           avatart_aws_url="https://aimlops-cohort3-group5-capstone-project.s3.ap-south-1.amazonaws.com/male3.mp4"
+           avatart_aws_url=getKey("avatart_aws_url_female")
     else :
         SPEAKER= "v2/en_speaker_6"
         if avatart_aws_url is  None:
-           avatart_aws_url="https://aimlops-cohort3-group5-capstone-project.s3.ap-south-1.amazonaws.com/female2.mp4"
+           avatart_aws_url=getKey("avatart_aws_url_male")
 
     print(f"avatar url ===={avatart_aws_url}")
 

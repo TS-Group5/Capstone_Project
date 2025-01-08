@@ -1,7 +1,8 @@
 import requests
+from src.util.properties  import getKey
 def generate_lip_sync(vido_url, audio_url):
 
-    url = "https://api.sync.so/v2/generate"
+    url = getKey("sync_url_create")
 
     payload = {
         "model": "lipsync-1.7.1",
@@ -22,7 +23,7 @@ def generate_lip_sync(vido_url, audio_url):
     }
 
     headers = {
-        "x-api-key": "sk-FcYNXOB3T22njoBg794L_w.KVnki7dwD4ZLf7yd6EB0G-rWoo_9SNeS",
+        "x-api-key": getKey("sync_x-api-key"),
         "Content-Type": "application/json"
     }
 
@@ -47,9 +48,9 @@ def fetch_video( video_id, local_file_name):
         local_file_name (str): The name of the file to save the downloaded video.
     """
     # Construct the API URL with the given ID
-    url = f"https://api.sync.so/v2/generate/{video_id}"
+    url =getKey(f"sync_url_create")+"/"+{video_id}
     headers = {
-        "x-api-key": "sk-FcYNXOB3T22njoBg794L_w.KVnki7dwD4ZLf7yd6EB0G-rWoo_9SNeS"
+        "x-api-key": getKey("sync_x-api-key")
     }
 
     # Step 1: Get the response from the API

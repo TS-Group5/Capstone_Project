@@ -1,10 +1,11 @@
 import requests
 import json
+from properties import getKey
 def generate_formated_output_gemini(summary):
     # API endpoint
-    api_key = "AIzaSyBO_ZZBKcQKBeh5rOFdDzWXUvQq3AHOv_g"
+    api_key = getKey("gemini_api_key")
     url = (
-        f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={api_key}"
+        getKey("gemini_url")+{api_key}
     )
 
     # Create the prompt for MCQ generation
