@@ -14,10 +14,11 @@ from src.db.db_connector import get_url_by_id
 from src.util.lipsync import fetch_video
 from src.util.overlap import vdo_with_circular_bgvdo
 from src.util.aws_helper import upload_image_to_public_s3
+from src.db.db_connector import getKey
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 from moviepy.config import change_settings
-change_settings({"IMAGEMAGICK_BINARY": r"C:/Program Files/ImageMagick-7.1.1-Q16/magick.exe"})
+change_settings({"IMAGEMAGICK_BINARY": getKey("IMAGEMAGICK_BINARY")})
 # Load configuration
 def load_config():
     config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.yaml')

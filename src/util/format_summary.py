@@ -7,7 +7,7 @@ def generate_formated_output_gemini(summary):
     # API endpoint
     api_key = getKey("gemini_api_key")
     url = (
-        getKey("gemini_url")+{api_key}
+        getKey("gemini_url")+r"{api_key}"
     )
 
     # Create the prompt for MCQ generation
