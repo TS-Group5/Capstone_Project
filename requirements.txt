@@ -17,4 +17,5 @@ PyYAML
 mediapipe
 protobuf
 imageio[pyav]
+streamlit_webrtc
 

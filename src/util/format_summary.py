@@ -6,9 +6,13 @@ from src.db.db_connector  import getKey
 def generate_formated_output_gemini(summary):
     # API endpoint
     api_key = getKey("gemini_api_key")
+    print(api_key)
     url = (
-        getKey("gemini_url")+r"{api_key}"
+        getKey("gemini_url")+f"{api_key}"
     )
+
+    print("url="+url)
+
 
     # Create the prompt for MCQ generation
     prompt_text = (
