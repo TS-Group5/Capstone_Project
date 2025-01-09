@@ -122,6 +122,11 @@ template_option = st.sidebar.radio(
     "Choose a template:",
     ["ATS classic HR resume", "Industry manager resume"]
 )
+
+video_type = st.sidebar.radio(
+    "Choose a video type:",
+    ["ATS classic HR resume", "Industry manager resume"]
+)
 if 'user_info' in st.session_state :
     user_info=st.session_state.user_info
 
