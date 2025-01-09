@@ -18,10 +18,10 @@ setup(
     data_files=[
         ('pages', ['pages/2_🔒_Login.py', 'pages/3_⬆️_Upload_Resume.py']),
         ('img', ['img/back.png', 'img/login.png', 'img/resume.png']),
-        ('', [
-            'Skills.mp4', 'Achievement.mp4', 'Contact.mp4',
-            'Goals.mp4', 'Experience.mp4'
-        ]),
+        # ('', [
+        #     'Skills.mp4', 'Achievement.mp4', 'Contact.mp4',
+        #     'Goals.mp4', 'Experience.mp4'
+        # ]),
         ('src/video', [
             'src/video/Introduction.mp4', 'src/video/Skills.mp4',
             'src/video/Achievement.mp4', 'src/video/Contact.mp4',
