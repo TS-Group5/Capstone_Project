@@ -319,9 +319,11 @@ with c2:
         st.video(uploaded_file)
     else:
         if gender =="Male":
-            st.video("src/avatar_video/male.mp4")
+            avatar_path="src/avatar_video/male.mp4"
+            st.video(avatar_path)
         else :
-              st.video("src/avatar_video/female.mp4")
+              avatar_path="src/avatar_video/female.mp4"
+              st.video(avatar_path)
              
     st.text("Your Avatar")
      
