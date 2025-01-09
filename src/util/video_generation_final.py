@@ -144,7 +144,7 @@ def audio_generator(script, file_name, user_id, gender,avatart_aws_url):
     print("audio file name  "+file_name)
     bucket_name = "aimlops-cohort3-group5-capstone-project"
     public_audio_url = upload_image_to_public_s3(file_name, bucket_name)
-
+    print("public_audio_url======:", public_audio_url)	
     if public_audio_url:
         response_id=generate_lip_sync(avatart_aws_url, public_audio_url)
         print("response_id======:", public_audio_url)	
