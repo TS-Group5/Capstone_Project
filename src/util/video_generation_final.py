@@ -55,7 +55,7 @@ def video_generator(prompt, file_name):
         frames.extend(chunk_frames)
 
     # Save the video
-    export_to_video(frames, "src/video/"+file_name+".mp4", fps=fps)
+    export_to_video(frames, "src/video/"+file_name+"_g.mp4", fps=fps)
     print("Video generated and saved as 'optimized_sequential_video.mp4'")
 
 #Image Genertor
@@ -134,9 +134,10 @@ def audio_generator(script, file_name, user_id, gender,avatart_aws_url):
 
     # Concatenate all audio pieces into a single NumPy array
     final_audio = np.concatenate(pieces)
+    file_name="src/audio/"+file_name +".wav"
 
     # Write the concatenated audio to a WAV file
-    write_wav("src/audio/"+file_name +".wav", SAMPLE_RATE, final_audio.astype(np.float32))
+    write_wav(file_name, SAMPLE_RATE, final_audio.astype(np.float32))
     
     #upload the auto to s3 for lipsync
     file_name = "src/audio/"+file_name + ".wav"
