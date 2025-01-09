@@ -4,7 +4,8 @@ from botocore.exceptions import ClientError
 import os
 from src.db.db_connector  import getKey
 
-def upload_image_to_public_s3(file_name, bucket_name, object_name=None, region='ap-south-1'):
+def upload_image_to_public_s3(file_name, bucket_name):
+    object_name=None, region='ap-south-1'
 
     if object_name is None:
         object_name = file_name.split("/")[-1]

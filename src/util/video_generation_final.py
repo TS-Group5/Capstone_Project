@@ -80,78 +80,82 @@ def image_generator(prompt):
 
 #Audio Generator
 # Function to use GPU for audio generation
-def audio_generator(script, file_name, user_id, gender,avatart_aws_url):
-    print(f"Audio prompt: {script}")
-    
-    # Ensure GPU is visible to the environment
-    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-    
-    # Preload models for Bark   
-    preload_models()
-    
-    # Check if GPU is being used (example for TensorFlow or PyTorch)
+def audio_generator(script, file_name, user_id, gender, avatart_aws_url):
     try:
-        import torch
-        if not torch.cuda.is_available():
-            raise RuntimeError("GPU is not available. Please ensure proper GPU setup.")
-        print(f"Using GPU: {torch.cuda.get_device_name(torch.cuda.current_device())}")
-    except ImportError:
-        print("PyTorch is not installed. Ensure your library dependencies support GPU usage.")
+        print(f"Audio prompt: {script}")
 
-    # Split the script into sentences
-    sentences = nltk.sent_tokenize(script)
-    
-    # Configuration for Bark
-    GEN_TEMP = 0.6
-    SPEAKER = "v2/en_speaker_6"
-    SAMPLE_RATE = 22050  # Adjust as per your requirements
-    silence = np.zeros(int(0.25 * SAMPLE_RATE))  # quarter second of silence
-    if gender == "Female":
-       SPEAKER= "v2/en_speaker_9"
-       if avatart_aws_url is  None:
-           avatart_aws_url=getKey("avatart_aws_url_female")
-    else :
-        SPEAKER= "v2/en_speaker_6"
-        if avatart_aws_url is  None:
-           avatart_aws_url=getKey("avatart_aws_url_male")
+        # Ensure GPU is visible to the environment
+        os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-    print(f"avatar url ===={avatart_aws_url}")
+        # Preload models for Bark   
+        preload_models()
 
-   
-    # Generate audio for each sentence
-    pieces = []
-    for sentence in sentences:
-        semantic_tokens = generate_text_semantic(
-            sentence,
-            history_prompt=SPEAKER,
-            temp=GEN_TEMP,
-            min_eos_p=0.05,  # Controls how likely the generation is to end
-        )
-        # Ensure semantic_to_waveform leverages GPU if supported
-        audio_array = semantic_to_waveform(semantic_tokens, history_prompt=SPEAKER)
-        pieces.append(audio_array)
-        pieces.append(silence)
+        # Check if GPU is being used (example for TensorFlow or PyTorch)
+        try:
+            import torch
+            if not torch.cuda.is_available():
+                raise RuntimeError("GPU is not available. Please ensure proper GPU setup.")
+            print(f"Using GPU: {torch.cuda.get_device_name(torch.cuda.current_device())}")
+        except ImportError:
+            print("PyTorch is not installed. Ensure your library dependencies support GPU usage.")
 
-    # Concatenate all audio pieces into a single NumPy array
-    final_audio = np.concatenate(pieces)
-    file_name="src/audio/"+file_name +".wav"
+        # Split the script into sentences
+        sentences = nltk.sent_tokenize(script)
 
-    # Write the concatenated audio to a WAV file
-    write_wav(file_name, SAMPLE_RATE, final_audio.astype(np.float32))
-    
-    #upload the auto to s3 for lipsync
-    file_name = "src/audio/"+file_name + ".wav"
-    print("audio file name  "+file_name)
-    bucket_name = "aimlops-cohort3-group5-capstone-project"
-    public_audio_url = upload_image_to_public_s3(file_name, bucket_name)
+        # Configuration for Bark
+        GEN_TEMP = 0.6
+        SPEAKER = "v2/en_speaker_6"
+        SAMPLE_RATE = 22050  # Adjust as per your requirements
+        silence = np.zeros(int(0.25 * SAMPLE_RATE))  # quarter second of silence
 
-    if public_audio_url:
-        response_id=generate_lip_sync(avatart_aws_url, public_audio_url)
-        print("response_id======:", public_audio_url)	
-        insert_lipsync_data( user_id, file_name, "audio", response_id)
-        print("Public URL of the uploaded file:", public_audio_url)	
+        if gender == "Female":
+            SPEAKER = "v2/en_speaker_9"
+            if avatart_aws_url is None:
+                avatart_aws_url = getKey("avatart_aws_url_female")
+        else:
+            SPEAKER = "v2/en_speaker_6"
+            if avatart_aws_url is None:
+                avatart_aws_url = getKey("avatart_aws_url_male")
 
-    print(f"Audio file saved as {file_name}.wav")
+        print(f"Avatar URL: {avatart_aws_url}")
+
+        # Generate audio for each sentence
+        pieces = []
+        for sentence in sentences:
+            semantic_tokens = generate_text_semantic(
+                sentence,
+                history_prompt=SPEAKER,
+                temp=GEN_TEMP,
+                min_eos_p=0.05,  # Controls how likely the generation is to end
+            )
+            # Ensure semantic_to_waveform leverages GPU if supported
+            audio_array = semantic_to_waveform(semantic_tokens, history_prompt=SPEAKER)
+            pieces.append(audio_array)
+            pieces.append(silence)
+
+        # Concatenate all audio pieces into a single NumPy array
+        final_audio = np.concatenate(pieces)
+        file_name = f"src/audio/{file_name}.wav"
+
+        # Write the concatenated audio to a WAV file
+        write_wav(file_name, SAMPLE_RATE, final_audio.astype(np.float32))
+
+        # Upload the audio to S3 for lipsync
+        print(f"Audio file name: {file_name}")
+        bucket_name = "aimlops-cohort3-group5-capstone-project"
+        public_audio_url = upload_image_to_public_s3(file_name, bucket_name)
+        print("Public audio URL:", public_audio_url)
+
+        if public_audio_url:
+            response_id = generate_lip_sync(avatart_aws_url, public_audio_url)
+            print("Response ID:", response_id)
+            insert_lipsync_data(user_id, file_name, "audio", response_id)
+            print("Public URL of the uploaded file:", public_audio_url)
+
+        print(f"Audio file saved as {file_name}")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 #Merging the Audio Video outcomes
 
