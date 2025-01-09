@@ -20,6 +20,10 @@ logger = logging.getLogger(__name__)
 from moviepy.config import change_settings
 change_settings({"IMAGEMAGICK_BINARY": getKey("IMAGEMAGICK_BINARY")})
 avatar_path = "src/avatar_video/avatar.mp4"
+gender="male"
+
+if 'gender' in st.session_state :
+    gender=st.session_state.gender
 # Load configuration
 def load_config():
     config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.yaml')
@@ -242,6 +246,7 @@ with c1:
                 video_caption = {}
                 scenes= generate_formated_output_gemini(summary,)
                 required_sections = ['Introduction', 'Experience', 'Skills', 'Achievement', 'Goals', 'Contact']
+                print("plz wait.................")
                 for section in required_sections:
                     if section in scenes:
                         print(f"--- {scenes[section]['Caption']} ---")
@@ -249,7 +254,7 @@ with c1:
                         with st.spinner("Generating Audio... Please wait!"):
                                 try:
                                     avatart_aws_url=public_url
-                                    audio_path = audio_generator(scenes[section]['Audio'], section,user_info.get("id"), gender,avatart_aws_url )
+                                    audiop_ath = audio_generator(scenes[section]['Audio'], section,user_info.get("id"), gender,avatart_aws_url )
                                     
                                     message_placeholder.success("Audio generated successfully!")
                                 except Exception as e:
@@ -257,7 +262,8 @@ with c1:
                             
                         with st.spinner("Generating video... Please wait!"):
                                 try:
-                                    #video_path = video_generator(scenes[section]['Visual'], duration, section)
+                                    if video_type =="Generate":
+                                        video_path = video_generator(scenes[section]['Visual'], section)
                                     message_placeholder.success("Video generated successfully!")
                                 except Exception as e:
                                     message_placeholder.error(f"An error occurred: while generating video {e}")  
@@ -330,6 +336,7 @@ with c2:
         else :
               avatar_path="src/avatar_video/female.mp4"
               st.video(avatar_path)
+        st.session_state.gender=gender
              
     st.text("Your Avatar")
      
