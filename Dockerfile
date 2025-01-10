@@ -16,6 +16,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y imagemagick
+
 # Install Python dependencies and the package itself
 RUN pip install -r requirements.txt \
     && pip install --no-cache-dir -e .
