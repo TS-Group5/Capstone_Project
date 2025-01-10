@@ -1,5 +1,5 @@
 # Use Python 3.11 as base image
-FROM python:3.11-slim
+FROM nvidia/cuda:12.6.3-cudnn-runtime-ubuntu22.04
 
 # Set working directory
 WORKDIR /app
