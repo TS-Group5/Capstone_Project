@@ -18,7 +18,7 @@ from src.db.db_connector import getKey
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 from moviepy.config import change_settings
-change_settings({"IMAGEMAGICK_BINARY": getKey("IMAGEMAGICK_BINARY")})
+#change_settings({"IMAGEMAGICK_BINARY": getKey("IMAGEMAGICK_BINARY")})
 avatar_path = "src/avatar_video/avatar.mp4"
 gender="male"
 

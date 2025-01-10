@@ -29,6 +29,9 @@ RUN apt-get update && apt-get install -y wget && \
     apt-get clean && \
     apt-get autoremove
 
+RUN apt-get update && \
+    apt-get -y install ghostscript
+
 RUN sh ./ImageMagick-7.1.0-31/configure --prefix=/usr/local --with-bzlib=yes --with-fontconfig=yes --with-freetype=yes --with-gslib=yes --with-gvc=yes --with-jpeg=yes --with-jp2=yes --with-png=yes --with-tiff=yes --with-xml=yes --with-gs-font-dir=yes && \
     make -j && make install && ldconfig /usr/local/lib/
 
