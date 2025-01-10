@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     python3-dev \
     curl \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 #RUN apt-get update && apt-get install -y imagemagick
