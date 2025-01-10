@@ -18,7 +18,6 @@ RUN apt-get update && apt-get install -y \
 
 # Install Python dependencies and the package itself
 RUN pip install -r requirements.txt \
-    && pip install -r requirements-dev.txt \
     && pip install --no-cache-dir -e .
 
 # Expose Streamlit port
