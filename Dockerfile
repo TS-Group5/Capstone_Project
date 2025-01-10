@@ -8,12 +8,18 @@ WORKDIR /app
 COPY . .
 
 # Install system dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     ffmpeg \
+    build-essential \
+    python3-dev \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies and the package itself
-RUN pip install --no-cache-dir -e .
+RUN pip install -r requirements.txt \
+    && pip install -r requirements-dev.txt \
+    && pip install --no-cache-dir -e .
 
 # Expose Streamlit port
 EXPOSE 8501
